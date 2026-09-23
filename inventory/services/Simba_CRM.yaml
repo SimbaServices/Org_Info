@@ -1,0 +1,31 @@
+schema: 1
+repo: Simba_CRM
+name: Simba CRM
+id: crm
+live: true
+order: 10
+host: shared
+public:
+- name: crm.simba.services
+  url: https://crm.simba.services/
+  edge: Cloudflare :443 → nginx
+  health: https://crm.simba.services/health
+process:
+  name: ledger-router.service
+  bind: 127.0.0.1:8787
+  listen_public: false
+store: PostgreSQL :5432 ledger_meta, ledger_blobs
+edge_steps:
+- title: nginx :80 :443
+  detail: crm.simba.services (default server)
+- title: ledger-router
+  detail: 127.0.0.1:8787
+- title: PostgreSQL :5432
+  detail: ledger_meta, ledger_blobs
+outbound:
+- to: unpkg.com, cdn.jsdelivr.net
+  what: Browser loads HTMX and Gridstack
+notes: 'Desk at https://crm.simba.services/. Router binds 127.0.0.1:8787 only. nginx
+  is the public edge. Do not expose 8787.
+
+  '

@@ -1,0 +1,27 @@
+# Copy into a service repo as .github/workflows/notify-network.yml
+# so a network.yaml change can rebuild the Org_Info schematic.
+# Needs repo secret ORG_INFO_DISPATCH_TOKEN with access to dispatch
+# SimbaServices/Org_Info (not required for the daily Org_Info cron).
+
+name: Notify Org_Info network map
+
+on:
+  push:
+    paths:
+      - network.yaml
+      - deploy/network.yaml
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: repository_dispatch Org_Info
+        env:
+          GH_TOKEN: ${{ secrets.ORG_INFO_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "ORG_INFO_DISPATCH_TOKEN is not set; skip dispatch"
+            exit 0
+          fi
+          gh api repos/SimbaServices/Org_Info/dispatches -f event_type=network-refresh

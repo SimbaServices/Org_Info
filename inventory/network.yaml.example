@@ -1,0 +1,40 @@
+# Copy to the service repo root as network.yaml (or deploy/network.yaml).
+# Org_Info discovers this file on the default branch and redraws the schematic.
+schema: 1
+repo: Your_Repo_Name
+name: Display name
+id: short-id                 # optional; used in filters if this repo owns a host
+live: true                   # false = blueprint / not serving
+host: shared                 # id from Org_Info inventory/hosts.yaml, or null
+# New machine? Add it to inventory/hosts.yaml in Org_Info, or inline:
+# host:
+#   id: newhost
+#   label: New app host
+#   kind: ubuntu
+#   ipv4: 203.0.113.10
+#   ssh: { user: deploy, port: 22, address: 203.0.113.10, host_key: "ssh-ed25519 AAAA..." }
+
+public:
+  - name: app.simba.services
+    url: https://app.simba.services/
+    edge: Cloudflare :443 → nginx
+    health: https://app.simba.services/health   # probed; failures are marked, not fatal
+
+process:
+  name: your.service
+  bind: 127.0.0.1:9000       # localhost only — never a public listener
+  listen_public: false
+
+store: SQLite /var/lib/app/app.db
+
+edge_steps:                  # optional host-card flow (single-app hosts)
+  - title: nginx :80 :443
+    detail: app.simba.services
+  - title: your.service
+    detail: 127.0.0.1:9000
+
+outbound:
+  - to: api.example.com
+    what: What crosses that link
+
+notes: Anything an operator should know. Do not put tokens, .env, or private keys here.

@@ -1,0 +1,33 @@
+schema: 1
+repo: simba-maintenance
+name: Maintenance
+id: maintenance
+live: true
+order: 30
+host: shared
+public:
+- name: maintenance.simba.services
+  url: https://maintenance.simba.services/
+  edge: Cloudflare :443 → nginx
+  health: https://maintenance.simba.services/health
+process:
+  name: maintenance.service
+  bind: 127.0.0.1:8090
+  listen_public: false
+store: SQLite /var/lib/maintenance/maintenance.db
+edge_steps:
+- title: nginx :80 :443
+  detail: maintenance.simba.services
+- title: maintenance
+  detail: 127.0.0.1:8090
+- title: SQLite
+  detail: maintenance.db
+outbound:
+- to: api.samsara.com
+  what: Vehicle list and odometers. Daily check 5:00 PM Central.
+- to: mail.simba.services
+  what: Due-service mail from maintenance@simba.services
+notes: 'Files live under /opt/maintenance, /etc/maintenance, and /var/lib/maintenance.
+  App port stays on localhost. Do not expose 8090.
+
+  '

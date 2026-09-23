@@ -1,0 +1,12 @@
+schema: 1
+repo: Samsara
+name: Samsara fleet
+id: samsara
+live: false
+host: null
+public: []
+notes: 'Render blueprint (samsara-fleet-live) exists in this repo. fleet.simba.services
+  does not resolve and the Render health path has not been live. Not serving on a
+  remote host. Maintenance on the GovDeals host is the live Samsara consumer.
+
+  '

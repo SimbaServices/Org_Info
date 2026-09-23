@@ -1,0 +1,43 @@
+name: Refresh remote host network
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [network-refresh]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -r tools/requirements.txt
+
+      - name: Generate schematic
+        env:
+          GH_TOKEN: ${{ secrets.ORG_READ_TOKEN || github.token }}
+        run: python tools/generate_network.py --write-fallbacks
+
+      - name: Commit if the inventory changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add remote-host-network.html inventory/generated.json inventory/services
+          if git diff --cached --quiet; then
+            echo "No inventory change"
+          else
+            git commit -m "Refresh remote-host-network.html from SimbaServices inventory"
+            git push
+          fi

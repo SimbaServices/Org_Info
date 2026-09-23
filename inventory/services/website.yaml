@@ -1,0 +1,26 @@
+# Org extra: simba.services is Netlify and is not a SimbaServices GitHub repo.
+schema: 1
+org_extra: true
+repo: Website
+name: Website
+id: site
+live: true
+host: site
+public:
+  - name: simba.services
+    url: https://simba.services/
+    edge: apex 75.2.60.5
+    health: https://simba.services/
+  - name: www.simba.services
+    url: https://www.simba.services/
+    edge: Cloudflare, then Netlify
+    health: https://www.simba.services/
+process:
+  name: Netlify static + functions
+  bind: null
+  listen_public: true
+store: no database in this repo
+outbound:
+  - to: Telegram
+    what: Application and contact mail via Netlify functions
+notes: Public site on Netlify. www is proxied by Cloudflare.

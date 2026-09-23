@@ -1,0 +1,124 @@
+# Org-level hosts and shared facts for the remote-host schematic.
+# Service repos declare `host: <id>` in network.yaml / deploy/network.yaml.
+schema: 1
+
+cloudflare:
+  label: Cloudflare proxy
+  ipv4:
+    - 104.21.31.161
+    - 172.67.178.69
+  names:
+    - crm
+    - gd
+    - maintenance
+    - wellnav
+    - propeval
+    - www
+
+clients:
+  label: Clients
+  detail: Browsers, Well Navigation iOS, Well Navigation Android
+
+login_key:
+  label: Login ~/.ssh/id_ed25519
+  key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com
+
+mail:
+  host: mail.simba.services
+  ipv4: 95.217.8.248
+  notes: Used by Maintenance and Well Navigation. No SimbaServices repo of its own.
+
+# Folder names under a --local-root (e.g. C:\Simba) for a first generate before GitHub has the files.
+local_roots:
+  GovDeals: GovDeals
+  Simba_CRM: Simba_CRM
+  simba-maintenance: Maintenance
+  Well_Navigation: Well_Navigation
+  SS_Property_Evaluation: SS_Property_Evaluation
+  Samsara: Samsara
+
+exclude_from_missing:
+  - Org_Info
+
+hosts:
+  - id: wellnav
+    label: Well Navigation
+    kind: ubuntu
+    order: 10
+    ipv4: 62.238.113.20
+    meta: SSH wellnav:2222 · Hetzner CX23+
+    provider: Hetzner CX23+
+    ssh:
+      user: wellnav
+      port: 2222
+      address: 62.238.113.20
+      host_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVqXyW8P9yCPxCbAmcpfwPm16izPhu7a9vXG5Rp3ANa
+    public_listeners:
+      - "80"
+      - "443"
+    ufw:
+      - "2222"
+      - "80"
+      - "443"
+
+  - id: shared
+    label: GovDeals host
+    filter_label: GovDeals host
+    hostname: GovDeals
+    kind: ubuntu
+    shared: true
+    order: 20
+    ipv4: 95.216.155.122
+    ipv6: 2a01:4f9:c015:4ef0::1
+    os: Ubuntu 26.04.1
+    meta: Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals
+    provider: Hetzner
+    ssh:
+      user: root
+      port: 22
+      address: 95.216.155.122
+      host_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGoc7NWY2t8VSsyWrgY25f3FCoKJfBt5Xlp41gzur2Hy
+    extra_keys:
+      - label: GitHub deploy key on this host
+        file: ~/.ssh/govdeals_deploy
+        key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSlY4Gl3/ffRbZ92RmP42CpgpszH13d+6DnGTupMX+L govdeals-readonly-deploy
+    public_listeners:
+      - "80"
+      - "443"
+    ufw:
+      - OpenSSH
+      - "80"
+      - "443"
+    edge: nginx is the only public HTTP listener · :80 :443
+    notes: App ports stay on localhost. Do not expose 8787, 8765, or 8090.
+
+  - id: propeval
+    label: Property Evaluation
+    kind: ubuntu
+    order: 30
+    ipv4: 204.168.132.89
+    meta: SSH propeval:2222 · Hetzner CPX22
+    provider: Hetzner CPX22
+    ssh:
+      user: propeval
+      port: 2222
+      address: 204.168.132.89
+      host_key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJu4ezqh4p85SBc7ylz1/3FXJZ3vQ2rlbL1eor6GU/sW
+    public_listeners:
+      - "80"
+      - "443"
+    ufw:
+      - "2222"
+      - "80"
+      - "443"
+
+  - id: site
+    label: Website
+    kind: netlify
+    edge_only: true
+    order: 40
+    ipv4: 75.2.60.5
+    meta: simba.services · apex 75.2.60.5 · www via Cloudflare
+    ssh_hidden: true
+    notes: Website has no SSH host. It deploys to Netlify.
+    outbound_empty: The Netlify site sends application and contact mail through Telegram functions. It does not call the three Ubuntu hosts.
