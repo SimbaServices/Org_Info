@@ -1,0 +1,597 @@
+{
+  "wellnav": {
+    "schema": 1,
+    "collected_at": "2026-09-23 21:42 UTC",
+    "hostname": "ubuntu-4gb-hel1-2",
+    "ss": [
+      {
+        "addr": "127.0.0.1",
+        "port": 44575,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.53",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.54",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 443,
+        "public": true
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 2222,
+        "public": true
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 5050,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 80,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 443,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 2222,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 80,
+        "public": true
+      }
+    ],
+    "ufw": {
+      "active": true,
+      "allows": [
+        "2222/tcp",
+        "80/tcp",
+        "443/tcp"
+      ],
+      "raw_ok": true
+    },
+    "nginx": {
+      "ok": true,
+      "servers": [
+        {
+          "listen": [
+            {
+              "addr": "::",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            },
+            {
+              "addr": "*",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "wellnav.simba.services",
+            "62.238.113.20",
+            "_"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:5050"
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            }
+          ],
+          "server_names": [
+            "wellnav.simba.services",
+            "62.238.113.20",
+            "_"
+          ],
+          "locations": []
+        }
+      ],
+      "orphan_locations": []
+    },
+    "units": [
+      {
+        "name": "containerd.service",
+        "line": "containerd.service loaded active running"
+      },
+      {
+        "name": "docker.service",
+        "line": "docker.service loaded active running"
+      },
+      {
+        "name": "nginx.service",
+        "line": "nginx.service loaded active running"
+      }
+    ],
+    "host_id": "wellnav",
+    "ok": true
+  },
+  "shared": {
+    "schema": 1,
+    "collected_at": "2026-09-23 21:42 UTC",
+    "hostname": "GovDeals",
+    "ss": [
+      {
+        "addr": "127.0.0.1",
+        "port": 8090,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 8765,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.53",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 8787,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 443,
+        "public": true
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 5432,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.54",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 80,
+        "public": true
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 22,
+        "public": true
+      },
+      {
+        "addr": "[::1]",
+        "port": 5432,
+        "public": false
+      },
+      {
+        "addr": "[::]",
+        "port": 443,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 80,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 22,
+        "public": true
+      }
+    ],
+    "ufw": {
+      "active": true,
+      "allows": [
+        "OpenSSH",
+        "80/tcp",
+        "443/tcp"
+      ],
+      "raw_ok": true
+    },
+    "nginx": {
+      "ok": true,
+      "servers": [
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "gd.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": null
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "gd.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:8765"
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "maintenance.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": null
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "maintenance.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:8090"
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            }
+          ],
+          "server_names": [
+            "_"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": null
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 443,
+              "ssl": true,
+              "default": true
+            },
+            {
+              "addr": "::",
+              "port": 443,
+              "ssl": true,
+              "default": true
+            }
+          ],
+          "server_names": [
+            "crm.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:8787"
+            }
+          ]
+        }
+      ],
+      "orphan_locations": [
+        {
+          "path": "/",
+          "proxy_pass": "http://127.0.0.1:8787"
+        }
+      ]
+    },
+    "units": [
+      {
+        "name": "govdeals.service",
+        "line": "govdeals.service loaded active running"
+      },
+      {
+        "name": "ledger-router.service",
+        "line": "ledger-router.service loaded active running"
+      },
+      {
+        "name": "maintenance.service",
+        "line": "maintenance.service loaded active running"
+      },
+      {
+        "name": "nginx.service",
+        "line": "nginx.service loaded active running"
+      },
+      {
+        "name": "postgresql@18-main.service",
+        "line": "postgresql@18-main.service loaded active running"
+      }
+    ],
+    "host_id": "shared",
+    "ok": true
+  },
+  "propeval": {
+    "schema": 1,
+    "collected_at": "2026-09-23 21:42 UTC",
+    "hostname": "ubuntu-4gb-hel1-1",
+    "ss": [
+      {
+        "addr": "127.0.0.53",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 2222,
+        "public": true
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 80,
+        "public": true
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 44727,
+        "public": false
+      },
+      {
+        "addr": "0.0.0.0",
+        "port": 443,
+        "public": true
+      },
+      {
+        "addr": "127.0.0.54",
+        "port": 53,
+        "public": false
+      },
+      {
+        "addr": "127.0.0.1",
+        "port": 5050,
+        "public": false
+      },
+      {
+        "addr": "[::]",
+        "port": 2222,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 80,
+        "public": true
+      },
+      {
+        "addr": "[::]",
+        "port": 443,
+        "public": true
+      }
+    ],
+    "ufw": {
+      "active": true,
+      "allows": [
+        "2222/tcp",
+        "80/tcp",
+        "443/tcp"
+      ],
+      "raw_ok": true
+    },
+    "nginx": {
+      "ok": true,
+      "servers": [
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": true
+            }
+          ],
+          "server_names": [
+            "204.168.132.89",
+            "_"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:5050"
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 80,
+              "ssl": false,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "propeval.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/.well-known/acme-challenge/",
+              "proxy_pass": null
+            },
+            {
+              "path": "/",
+              "proxy_pass": null
+            }
+          ]
+        },
+        {
+          "listen": [
+            {
+              "addr": "*",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            },
+            {
+              "addr": "::",
+              "port": 443,
+              "ssl": true,
+              "default": false
+            }
+          ],
+          "server_names": [
+            "propeval.simba.services"
+          ],
+          "locations": [
+            {
+              "path": "/",
+              "proxy_pass": "http://127.0.0.1:5050"
+            }
+          ]
+        }
+      ],
+      "orphan_locations": []
+    },
+    "units": [
+      {
+        "name": "containerd.service",
+        "line": "containerd.service loaded active running"
+      },
+      {
+        "name": "docker.service",
+        "line": "docker.service loaded active running"
+      },
+      {
+        "name": "nginx.service",
+        "line": "nginx.service loaded active running"
+      }
+    ],
+    "host_id": "propeval",
+    "ok": true
+  }
+}

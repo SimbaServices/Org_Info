@@ -16,13 +16,20 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "tools") not in sys.path:
+    sys.path.insert(0, str(ROOT / "tools"))
+
+from collect_live import collect as collect_live_hosts  # noqa: E402
+from collect_live import load_saved as load_live_saved  # noqa: E402
+from live_network import reconcile  # noqa: E402
+
 try:
     import yaml
 except ImportError:  # pragma: no cover
     sys.stderr.write("PyYAML is required: pip install -r tools/requirements.txt\n")
     raise
 
-ROOT = Path(__file__).resolve().parents[1]
 ORG = "SimbaServices"
 NETWORK_PATHS = ("network.yaml", "deploy/network.yaml")
 SECRET_MARKERS = (
@@ -583,6 +590,7 @@ def render_html(
     hosts: dict[str, dict],
     hosts_cfg: dict,
     generated_at: str,
+    drift: list[dict] | None = None,
 ) -> str:
     login_key = hosts_cfg.get("login_key")
     for host in hosts.values():
@@ -659,11 +667,23 @@ def render_html(
     routes = route_rows(services)
     ssh = ssh_rows(hosts, login_key)
     outbound = outbound_rows(services)
+    drift = drift or []
+    drift_rows = [
+        [
+            item.get("host") or "",
+            item.get("host") or "",
+            item.get("kind") or "",
+            item.get("detail") or "",
+        ]
+        for item in drift
+    ]
     ok_probes = sum(1 for row in routes if str(row[-1]).startswith("200"))
+    live_hosts = sum(1 for h in hosts.values() if h.get("live_ok"))
     caption = (
         f"Live HTTP probe {generated_at}. {ok_probes} public route(s) returned 200. "
-        "Inventory is built from SimbaServices network.yaml files plus Org_Info hosts.yaml. "
-        "App bind addresses stay on localhost and are not public listeners."
+        f"Live nginx/ufw/listeners collected from {live_hosts} Ubuntu host(s). "
+        "Declared network.yaml routes are reconciled against that snapshot so host "
+        "changes are not missed. App bind addresses stay on localhost."
     )
 
     lead = (
@@ -722,6 +742,7 @@ def render_html(
     .stat b {{ display: block; font-size: 22px; font-weight: 600; color: var(--text); }}
     .stat span {{ color: var(--faint); font-size: 12px; }}
     .stat.ok b {{ color: var(--ok); }}
+    .stat.warn b {{ color: var(--warn); }}
     .filters {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }}
     button {{
       font: inherit;
@@ -817,6 +838,7 @@ def render_html(
     th {{ color: var(--faint); font-weight: 600; font-size: 12px; }}
     tr:nth-child(even) td {{ background: #14171b; }}
     td[data-ok="1"] {{ color: var(--ok); }}
+    td[data-warn="1"] {{ color: var(--warn); }}
     .aside {{
       margin-top: 22px;
       border: 1px solid var(--line);
@@ -847,6 +869,7 @@ def render_html(
     <div class="stat"><b>{s['hosts']}</b><span>Ubuntu hosts</span></div>
     <div class="stat ok"><b>{s['ok_apps']}</b><span>Apps returning 200</span></div>
     <div class="stat"><b>{s['shared']}</b><span>Shared machine</span></div>
+    <div class="stat{' warn' if drift else ''}"><b>{len(drift)}</b><span>Live vs declared drift</span></div>
   </div>
 
   <div class="filters" role="group" aria-label="Highlight a host">
@@ -884,6 +907,16 @@ def render_html(
     <tbody></tbody>
   </table>
 
+  <h2>Live host vs declared</h2>
+  <p class="caption">nginx server_names, public listeners, and ufw on each Ubuntu host, compared with network.yaml. Empty means the schematic matches the box.</p>
+  <table id="drift">
+    <thead>
+      <tr><th>Host</th><th>Kind</th><th>Detail</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="drift-empty" hidden>No drift. Live nginx/ufw/listeners match the declared inventory.</p>
+
   <h2>SSH</h2>
   <table id="ssh">
     <thead>
@@ -911,6 +944,7 @@ def render_html(
   const routes = {js_rows(routes)};
   const ssh = {js_rows(ssh)};
   const outbound = {js_rows(outbound)};
+  const drift = {js_rows(drift_rows)};
 
   function fill(table, rows, focus) {{
     const body = table.querySelector("tbody");
@@ -922,6 +956,7 @@ def render_html(
         td.textContent = cell;
         if (String(cell).startsWith("ssh-")) td.className = "keycell";
         if (String(cell).startsWith("200")) td.dataset.ok = "1";
+        if (["undeclared_route", "declared_missing", "unexpected_public_port", "process_exposed"].includes(String(cell))) td.dataset.warn = "1";
         tr.append(td);
       }});
       body.append(tr);
@@ -938,6 +973,9 @@ def render_html(
       button.setAttribute("aria-pressed", button.dataset.focus === focus ? "true" : "false");
     }});
     fill(document.querySelector("#routes"), routes, focus);
+    const driftCount = fill(document.querySelector("#drift"), drift, focus);
+    document.querySelector("#drift").hidden = driftCount === 0;
+    document.querySelector("#drift-empty").hidden = driftCount !== 0;
     const sshCount = fill(document.querySelector("#ssh"), ssh, focus);
     document.querySelector("#ssh").hidden = focus === "site" || sshCount === 0;
     document.querySelector("#ssh-site").hidden = !(focus === "site" || sshCount === 0);
@@ -971,7 +1009,7 @@ def write_if_changed(path: Path, text: str) -> bool:
     return True
 
 
-def snapshot(services: list[dict], missing: list[dict], generated_at: str) -> dict:
+def snapshot(services: list[dict], missing: list[dict], generated_at: str, drift: list[dict] | None = None) -> dict:
     slim = []
     for svc in services:
         slim.append(
@@ -996,6 +1034,7 @@ def snapshot(services: list[dict], missing: list[dict], generated_at: str) -> di
         "generated_at": generated_at,
         "services": slim,
         "missing": missing,
+        "drift": drift or [],
     }
 
 
@@ -1007,6 +1046,7 @@ def main() -> int:
     parser.add_argument("--prefer-local", action="store_true")
     parser.add_argument("--write-fallbacks", action="store_true")
     parser.add_argument("--no-probe", action="store_true")
+    parser.add_argument("--no-collect", action="store_true")
     parser.add_argument("--timeout", type=float, default=10.0)
     args = parser.parse_args()
 
@@ -1022,6 +1062,16 @@ def main() -> int:
         prefer_local=args.prefer_local,
         write_fallbacks=args.write_fallbacks,
     )
+    snapshots = {}
+    if not args.no_collect:
+        try:
+            snapshots = collect_live_hosts(hosts_cfg.get("hosts") or [], timeout=int(args.timeout))
+        except Exception as exc:  # noqa: BLE001
+            sys.stderr.write(f"warning: live collect failed ({exc}); using saved snapshots\n")
+            snapshots = load_live_saved()
+    else:
+        snapshots = load_live_saved()
+    drift = reconcile(services, hosts, snapshots)
     if not args.no_probe:
         probe_services(services, args.timeout)
 
@@ -1032,6 +1082,7 @@ def main() -> int:
         hosts=hosts,
         hosts_cfg=hosts_cfg,
         generated_at=generated_at,
+        drift=drift,
     )
     changed = write_if_changed(args.out, html_text)
     for dest in args.copy:
@@ -1040,13 +1091,16 @@ def main() -> int:
 
     snap_path = ROOT / "inventory" / "generated.json"
     snap_path.write_text(
-        json.dumps(snapshot(services, missing, generated_at), indent=2) + "\n",
+        json.dumps(snapshot(services, missing, generated_at, drift), indent=2) + "\n",
         encoding="utf-8",
     )
 
     live = [s.get("name") or s.get("repo") for s in services if s.get("live", True)]
     print(f"services: {len(services)} live={live}")
     print(f"missing network.yaml: {[m['name'] for m in missing]}")
+    print(f"drift: {len(drift)}")
+    for item in drift:
+        print(f"  {item.get('kind')}: {item.get('detail')}".encode("ascii", "replace").decode("ascii"))
     print(f"wrote {args.out} changed={changed}")
     for dest in args.copy:
         print(f"copied {dest}")

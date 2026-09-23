@@ -25,19 +25,32 @@ jobs:
       - name: Install
         run: pip install -r tools/requirements.txt
 
+      - name: Collect live host facts
+        env:
+          SIMBA_SSH_KEY: ${{ secrets.SIMBA_SSH_KEY }}
+        run: |
+          if [ -z "${SIMBA_SSH_KEY:-}" ]; then
+            echo "SIMBA_SSH_KEY is not set; using last committed inventory/live snapshots"
+            exit 0
+          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SIMBA_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          python tools/collect_live.py
+
       - name: Generate schematic
         env:
           GH_TOKEN: ${{ secrets.ORG_READ_TOKEN || github.token }}
-        run: python tools/generate_network.py --write-fallbacks
+        run: python tools/generate_network.py --write-fallbacks --no-collect
 
       - name: Commit if the inventory changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add remote-host-network.html inventory/generated.json inventory/services
+          git add remote-host-network.html inventory/generated.json inventory/services inventory/live
           if git diff --cached --quiet; then
             echo "No inventory change"
           else
-            git commit -m "Refresh remote-host-network.html from SimbaServices inventory"
+            git commit -m "Refresh remote-host-network.html from live hosts and inventory"
             git push
           fi

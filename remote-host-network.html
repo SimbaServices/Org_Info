@@ -42,6 +42,7 @@
     .stat b { display: block; font-size: 22px; font-weight: 600; color: var(--text); }
     .stat span { color: var(--faint); font-size: 12px; }
     .stat.ok b { color: var(--ok); }
+    .stat.warn b { color: var(--warn); }
     .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
     button {
       font: inherit;
@@ -137,6 +138,7 @@
     th { color: var(--faint); font-weight: 600; font-size: 12px; }
     tr:nth-child(even) td { background: #14171b; }
     td[data-ok="1"] { color: var(--ok); }
+    td[data-warn="1"] { color: var(--warn); }
     .aside {
       margin-top: 22px;
       border: 1px solid var(--line);
@@ -167,6 +169,7 @@
     <div class="stat"><b>3</b><span>Ubuntu hosts</span></div>
     <div class="stat ok"><b>5</b><span>Apps returning 200</span></div>
     <div class="stat"><b>1</b><span>Shared machine</span></div>
+    <div class="stat"><b>0</b><span>Live vs declared drift</span></div>
   </div>
 
   <div class="filters" role="group" aria-label="Highlight a host">
@@ -184,23 +187,23 @@
     </div>
 
     <div class="hosts">
-      <section class="host" data-part="wellnav"><h3>Well Navigation</h3><div class="ip">62.238.113.20</div><div class="meta">SSH wellnav:2222 · Hetzner CX23+</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>wellnav.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>docker wellnav</strong><em>127.0.0.1:5050 · uvicorn</em></div><div class="arrow">↓</div><div class="step"><strong>SQLite volume</strong><em>wellnav, pipelines, disposal</em></div></div><p class="note">ufw allows 2222, 80, 443. Out Stripe, Twilio, SMTP, USGS National Map tiles. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVqXyW8P9yCPxCbAmcpfwPm16izPhu7a9vXG5Rp3ANa<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section><section class="host shared" data-part="shared"><h3>GovDeals host — 3 apps</h3><div class="ip">95.216.155.122 · 2a01:4f9:c015:4ef0::1</div><div class="meta">Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals</div><div class="bus">nginx is the only public HTTP listener · :80 :443</div><div class="services"><div class="svc"><div><strong>Simba CRM</strong><em>crm.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8787</strong><em>ledger-router.service</em></div><span class="to">→</span><div><strong>PostgreSQL</strong><em>PostgreSQL :5432 ledger_meta, ledger_blobs</em></div></div><div class="svc"><div><strong>GovDeals</strong><em>gd.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8765</strong><em>govdeals.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /opt/govdeals/data/govdeals.db</em></div></div><div class="svc"><div><strong>Maintenance</strong><em>maintenance.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8090</strong><em>maintenance.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /var/lib/maintenance/maintenance.db</em></div></div></div><p class="note">App ports stay on localhost. Do not expose 8787, 8765, or 8090. ufw allows OpenSSH, 80, 443.</p><p class="key"><b>Host key, port 22</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGoc7NWY2t8VSsyWrgY25f3FCoKJfBt5Xlp41gzur2Hy<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com<b>GitHub deploy key on this host</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSlY4Gl3/ffRbZ92RmP42CpgpszH13d+6DnGTupMX+L govdeals-readonly-deploy</p></section><section class="host" data-part="propeval"><h3>Property Evaluation</h3><div class="ip">204.168.132.89</div><div class="meta">SSH propeval:2222 · Hetzner CPX22</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>propeval.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>bare IP :80</strong><em>same nginx, default server</em></div><div class="arrow">↓</div><div class="step"><strong>docker propeval</strong><em>127.0.0.1:5050 · uvicorn</em></div></div><p class="note">ufw allows 2222, 80, 443. Out TX, NM, OK, LA GIS during ingest. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJu4ezqh4p85SBc7ylz1/3FXJZ3vQ2rlbL1eor6GU/sW<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section>
+      <section class="host" data-part="wellnav"><h3>Well Navigation</h3><div class="ip">62.238.113.20</div><div class="meta">SSH wellnav:2222 · Hetzner CX23+</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>wellnav.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>docker wellnav</strong><em>127.0.0.1:5050 · uvicorn</em></div><div class="arrow">↓</div><div class="step"><strong>SQLite volume</strong><em>wellnav, pipelines, disposal</em></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp. Out Stripe, Twilio, SMTP, USGS National Map tiles. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVqXyW8P9yCPxCbAmcpfwPm16izPhu7a9vXG5Rp3ANa<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section><section class="host shared" data-part="shared"><h3>GovDeals host — 3 apps</h3><div class="ip">95.216.155.122 · 2a01:4f9:c015:4ef0::1</div><div class="meta">Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals</div><div class="bus">nginx is the only public HTTP listener · :80 :443</div><div class="services"><div class="svc"><div><strong>Simba CRM</strong><em>crm.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8787</strong><em>ledger-router.service</em></div><span class="to">→</span><div><strong>PostgreSQL</strong><em>PostgreSQL :5432 ledger_meta, ledger_blobs</em></div></div><div class="svc"><div><strong>GovDeals</strong><em>gd.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8765</strong><em>govdeals.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /opt/govdeals/data/govdeals.db</em></div></div><div class="svc"><div><strong>Maintenance</strong><em>maintenance.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8090</strong><em>maintenance.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /var/lib/maintenance/maintenance.db</em></div></div></div><p class="note">App ports stay on localhost. Do not expose 8787, 8765, or 8090. ufw allows OpenSSH, 80/tcp, 443/tcp.</p><p class="key"><b>Host key, port 22</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGoc7NWY2t8VSsyWrgY25f3FCoKJfBt5Xlp41gzur2Hy<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com<b>GitHub deploy key on this host</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSlY4Gl3/ffRbZ92RmP42CpgpszH13d+6DnGTupMX+L govdeals-readonly-deploy</p></section><section class="host" data-part="propeval"><h3>Property Evaluation</h3><div class="ip">204.168.132.89</div><div class="meta">SSH propeval:2222 · Hetzner CPX22</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>propeval.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>bare IP :80</strong><em>same nginx, default server</em></div><div class="arrow">↓</div><div class="step"><strong>docker propeval</strong><em>127.0.0.1:5050 · uvicorn</em></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp. Out TX, NM, OK, LA GIS during ingest. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJu4ezqh4p85SBc7ylz1/3FXJZ3vQ2rlbL1eor6GU/sW<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section>
     </div>
 
     <div class="outs">
-      <article class="out" data-part="shared"><strong>unpkg.com, cdn.jsdelivr.net</strong><span>Simba CRM. Browser loads HTMX and Gridstack</span></article>
       <article class="out" data-part="shared"><strong>api.samsara.com</strong><span>Maintenance. Vehicle list and odometers. Daily check 5:00 PM Central.</span></article>
       <article class="out" data-part="shared wellnav"><strong>mail.simba.services</strong><span>Due-service mail from maintenance@simba.services Registration and password OTP Used by Maintenance and Well Navigation. No SimbaServices repo of its own.</span></article>
+      <article class="out" data-part="shared"><strong>www.govdeals.com</strong><span>GovDeals. Auction catalog every 4 hours. Hook poll every 30 seconds.</span></article>
       <article class="out" data-part="wellnav"><strong>Stripe</strong><span>Well Navigation. Seat checkout webhook at /billing/webhook</span></article>
       <article class="out" data-part="wellnav"><strong>Twilio</strong><span>Well Navigation. SMS when configured; SMTP is the other path</span></article>
       <article class="out" data-part="wellnav"><strong>basemap.nationalmap.gov</strong><span>Well Navigation. USGS tiles via /offline/tiles</span></article>
-      <article class="out" data-part="shared"><strong>www.govdeals.com</strong><span>GovDeals. Auction catalog every 4 hours. Hook poll every 30 seconds.</span></article>
+      <article class="out" data-part="shared"><strong>unpkg.com, cdn.jsdelivr.net</strong><span>Simba CRM. Browser loads HTMX and Gridstack</span></article>
       <article class="out" data-part="propeval"><strong>State GIS</strong><span>Property Evaluation. TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest</span></article>
       <article class="out" data-part="site"><strong>Telegram</strong><span>Website. Application and contact mail via Netlify functions</span></article>
     </div>
   </div>
 
-  <p class="caption">Live HTTP probe 2026-09-23 21:36 UTC. 7 public route(s) returned 200. Inventory is built from SimbaServices network.yaml files plus Org_Info hosts.yaml. App bind addresses stay on localhost and are not public listeners.</p>
+  <p class="caption">Live HTTP probe 2026-09-23 21:42 UTC. 7 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
 
   <h2>Public routes</h2>
   <table id="routes">
@@ -211,6 +214,16 @@
     </thead>
     <tbody></tbody>
   </table>
+
+  <h2>Live host vs declared</h2>
+  <p class="caption">nginx server_names, public listeners, and ufw on each Ubuntu host, compared with network.yaml. Empty means the schematic matches the box.</p>
+  <table id="drift">
+    <thead>
+      <tr><th>Host</th><th>Kind</th><th>Detail</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="drift-empty" hidden>No drift. Live nginx/ufw/listeners match the declared inventory.</p>
 
   <h2>SSH</h2>
   <table id="ssh">
@@ -239,21 +252,21 @@
   const routes = [
   [
     "shared",
-    "Simba CRM",
-    "crm.simba.services",
-    "Cloudflare :443 → nginx",
-    "ledger-router.service 127.0.0.1:8787",
-    "PostgreSQL :5432 ledger_meta, ledger_blobs",
-    "200 /health · schema 1.7.0 · 4 users"
-  ],
-  [
-    "shared",
     "Maintenance",
     "maintenance.simba.services",
     "Cloudflare :443 → nginx",
     "maintenance.service 127.0.0.1:8090",
     "SQLite /var/lib/maintenance/maintenance.db",
     "200 /health"
+  ],
+  [
+    "shared",
+    "GovDeals",
+    "gd.simba.services",
+    "Cloudflare :443 → nginx",
+    "govdeals.service 127.0.0.1:8765",
+    "SQLite /opt/govdeals/data/govdeals.db",
+    "200 /"
   ],
   [
     "wellnav",
@@ -266,12 +279,12 @@
   ],
   [
     "shared",
-    "GovDeals",
-    "gd.simba.services",
+    "Simba CRM",
+    "crm.simba.services",
     "Cloudflare :443 → nginx",
-    "govdeals.service 127.0.0.1:8765",
-    "SQLite /opt/govdeals/data/govdeals.db",
-    "200 /"
+    "ledger-router.service 127.0.0.1:8787",
+    "PostgreSQL :5432 ledger_meta, ledger_blobs",
+    "200 /health · schema 1.7.0 · 4 users"
   ],
   [
     "propeval",
@@ -364,12 +377,6 @@
   const outbound = [
   [
     "shared",
-    "Simba CRM",
-    "unpkg.com, cdn.jsdelivr.net",
-    "Browser loads HTMX and Gridstack"
-  ],
-  [
-    "shared",
     "Maintenance",
     "api.samsara.com",
     "Vehicle list and odometers. Daily check 5:00 PM Central."
@@ -379,6 +386,12 @@
     "Maintenance",
     "mail.simba.services",
     "Due-service mail from maintenance@simba.services"
+  ],
+  [
+    "shared",
+    "GovDeals",
+    "www.govdeals.com",
+    "Auction catalog every 4 hours. Hook poll every 30 seconds."
   ],
   [
     "wellnav",
@@ -406,9 +419,9 @@
   ],
   [
     "shared",
-    "GovDeals",
-    "www.govdeals.com",
-    "Auction catalog every 4 hours. Hook poll every 30 seconds."
+    "Simba CRM",
+    "unpkg.com, cdn.jsdelivr.net",
+    "Browser loads HTMX and Gridstack"
   ],
   [
     "propeval",
@@ -423,6 +436,7 @@
     "Application and contact mail via Netlify functions"
   ]
 ];
+  const drift = [];
 
   function fill(table, rows, focus) {
     const body = table.querySelector("tbody");
@@ -434,6 +448,7 @@
         td.textContent = cell;
         if (String(cell).startsWith("ssh-")) td.className = "keycell";
         if (String(cell).startsWith("200")) td.dataset.ok = "1";
+        if (["undeclared_route", "declared_missing", "unexpected_public_port", "process_exposed"].includes(String(cell))) td.dataset.warn = "1";
         tr.append(td);
       });
       body.append(tr);
@@ -450,6 +465,9 @@
       button.setAttribute("aria-pressed", button.dataset.focus === focus ? "true" : "false");
     });
     fill(document.querySelector("#routes"), routes, focus);
+    const driftCount = fill(document.querySelector("#drift"), drift, focus);
+    document.querySelector("#drift").hidden = driftCount === 0;
+    document.querySelector("#drift-empty").hidden = driftCount !== 0;
     const sshCount = fill(document.querySelector("#ssh"), ssh, focus);
     document.querySelector("#ssh").hidden = focus === "site" || sshCount === 0;
     document.querySelector("#ssh-site").hidden = !(focus === "site" || sshCount === 0);

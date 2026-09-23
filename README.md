@@ -6,7 +6,7 @@ Private home for org-level facts. The remote-host schematic is generated from Gi
 
 Open [`remote-host-network.html`](remote-host-network.html) in a browser (or the local copy at `C:\Simba\remote-host-network.html`).
 
-It stays current by reading `network.yaml` from every **SimbaServices** repo, merging [`inventory/hosts.yaml`](inventory/hosts.yaml), and rewriting the HTML.
+It stays current by reading `network.yaml` from every **SimbaServices** repo, merging [`inventory/hosts.yaml`](inventory/hosts.yaml), **SSHing to each Ubuntu host** for live nginx/ufw/listener facts, and rewriting the HTML. Live routes that are not in yaml still appear. Declared routes that are gone from nginx are marked as drift.
 
 ```powershell
 cd C:\Simba\Org_Info
@@ -14,7 +14,9 @@ python -m pip install -r tools/requirements.txt
 python tools/generate_network.py --prefer-local --local-root C:\Simba --write-fallbacks --copy C:\Simba\remote-host-network.html
 ```
 
-`gh` must be logged in (`repo` + `read:org`). The script lists the org, fetches each `network.yaml`, probes public health URLs, and does not fail the build if a probe times out.
+`gh` must be logged in (`repo` + `read:org`). The script lists the org, fetches each `network.yaml`, SSHs to the machines in `hosts.yaml` (BatchMode, host keys from that file), probes public health URLs, and does not fail the build if a probe or one host times out.
+
+Live collection is the check against the boxes. Updating nginx/ufw without touching `network.yaml` still shows up on the next generate (or within 15 minutes on a host that has the snapshot timer). `--no-collect` reuses `inventory/live/*.json`.
 
 ## Add a new app to the map
 
@@ -56,6 +58,8 @@ Netlify (or any app that is not an org repo) can live under `inventory/services/
 [`.github/workflows/refresh-network.yml`](.github/workflows/refresh-network.yml) rebuilds daily and on `workflow_dispatch` / `repository_dispatch` (`network-refresh`). It commits `remote-host-network.html` only when the inventory actually changed (timestamps alone do not create a commit).
 
 The default `GITHUB_TOKEN` can read this repo and public org repos. It cannot list or read other **private** org repos.
+
+To collect live nginx/ufw from the Ubuntu hosts in Actions, add the login private key as **`SIMBA_SSH_KEY`**. Until that secret exists, the workflow uses the last `inventory/live/*.json` committed from a local generate. On each Ubuntu host, `tools/install-host-snapshot.sh` installs a 15-minute timer that writes `/var/lib/simba-network/live.json`. Deploy scripts (`restrict-govdeals-edge.sh`, `enable-https.sh`) refresh that file after nginx changes.
 
 To pick up new private apps automatically, add a classic PAT (or fine-grained token) with **Contents: Read** on the SimbaServices org as the Actions secret **`ORG_READ_TOKEN`**. Until that secret exists, the workflow still draws current private apps from `inventory/services/*.yaml` fallbacks written by a local generate (`--write-fallbacks`), and it still fetches public repos (`GovDeals`, `Well_Navigation`) live.
 
