@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simba remote host network</title>
+  <style>
+    :root {
+      --bg: #101114;
+      --surface: #181b20;
+      --chip: #22262d;
+      --line: #3a404a;
+      --text: #eceff3;
+      --muted: #a7b0bb;
+      --faint: #7d8793;
+      --accent: #7aa2ff;
+      --ok: #3ecf8e;
+      --warn: #e2b340;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 "Segoe UI", system-ui, sans-serif;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+    }
+    h1 { font-size: 24px; font-weight: 600; margin: 0 0 6px; }
+    h2 { font-size: 18px; font-weight: 600; margin: 28px 0 10px; }
+    h3 { font-size: 14px; font-weight: 600; margin: 0 0 8px; }
+    p { margin: 0; color: var(--muted); }
+    .lead { max-width: 68ch; }
+    .stats {
+      display: flex;
+      gap: 28px;
+      margin: 18px 0 16px;
+    }
+    .stat b { display: block; font-size: 22px; font-weight: 600; color: var(--text); }
+    .stat span { color: var(--faint); font-size: 12px; }
+    .stat.ok b { color: var(--ok); }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    button {
+      font: inherit;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    button[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #101114;
+    }
+    .schematic { display: flex; flex-direction: column; gap: 0; }
+    .bar, .host, .out, .step, .svc {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .bar { padding: 10px 14px; }
+    .bar strong { display: block; font-size: 13px; }
+    .bar span, .host .meta, .step em, .svc em, .out span { color: var(--muted); font-size: 12px; font-style: normal; }
+    .edge {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .hosts {
+      display: grid;
+      grid-template-columns: 250px 1fr 250px;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .host { padding: 12px 14px 14px; min-height: 100%; }
+    .host.shared { border-color: var(--accent); }
+    .host h3 { font-size: 14px; }
+    .host .ip { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .host .meta { margin: 2px 0 10px; }
+    .bus {
+      background: var(--chip);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .flow, .services { display: flex; flex-direction: column; gap: 6px; }
+    .step, .svc { background: var(--chip); border-radius: 4px; padding: 7px 8px; }
+    .step strong, .svc strong { display: block; font-size: 12px; font-weight: 600; }
+    .arrow { color: var(--faint); font-size: 12px; padding-left: 8px; }
+    .svc {
+      display: grid;
+      grid-template-columns: 1.3fr auto 1fr auto 0.8fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .svc .to { color: var(--faint); }
+    .note { color: var(--faint); font-size: 11px; margin-top: 10px; }
+    .outs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .out { padding: 10px 12px; }
+    .out strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .caption { color: var(--faint); font-size: 12px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--faint); font-weight: 600; font-size: 12px; }
+    tr:nth-child(even) td { background: #14171b; }
+    td[data-ok="1"] { color: var(--ok); }
+    .aside {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .aside strong { color: var(--text); display: block; margin-bottom: 4px; }
+    [data-part].dim { opacity: 0.28; }
+    @media (max-width: 980px) {
+      .edge, .hosts, .outs, .svc { grid-template-columns: 1fr; }
+      .svc .to { display: none; }
+    }
+    @media print {
+      body { background: #fff; color: #111; }
+      .bar, .host, .out, .step, .svc, .aside { border-color: #ccc; background: #fff; }
+      button { display: none; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Remote host network</h1>
+  <p class="lead">Five apps on three Ubuntu machines, plus the public site on Netlify. Every *.simba.services name below answered through Cloudflare.</p>
+
+  <div class="stats">
+    <div class="stat"><b>3</b><span>Ubuntu hosts</span></div>
+    <div class="stat ok"><b>5</b><span>Apps returning 200</span></div>
+    <div class="stat"><b>1</b><span>Shared machine</span></div>
+  </div>
+
+  <div class="filters" role="group" aria-label="Highlight a host">
+    <button type="button" data-focus="all" aria-pressed="true">All hosts</button>
+    <button type="button" data-focus="shared" aria-pressed="false">GovDeals host</button>
+    <button type="button" data-focus="wellnav" aria-pressed="false">Well Navigation</button>
+    <button type="button" data-focus="propeval" aria-pressed="false">Property Evaluation</button>
+    <button type="button" data-focus="site" aria-pressed="false">Website</button>
+  </div>
+
+  <div class="schematic" id="schematic">
+    <div class="bar">
+      <strong>Clients</strong>
+      <span>Browsers, Well Navigation iOS, Well Navigation Android</span>
+    </div>
+
+    <div class="edge">
+      <div class="bar">
+        <strong>Cloudflare proxy</strong>
+        <span>104.21.31.161 · 172.67.178.69 · crm, gd, maintenance, wellnav, propeval, www</span>
+      </div>
+      <div class="bar" data-part="site">
+        <strong>Website · Netlify</strong>
+        <span>simba.services · apex 75.2.60.5 · www via Cloudflare</span>
+      </div>
+    </div>
+
+    <div class="hosts">
+      <section class="host" data-part="wellnav">
+        <h3>Well Navigation</h3>
+        <div class="ip">62.238.113.20</div>
+        <div class="meta">SSH wellnav:2222 · Hetzner CX23+</div>
+        <div class="flow">
+          <div class="step"><strong>nginx :80 :443</strong><em>wellnav.simba.services</em></div>
+          <div class="arrow">↓</div>
+          <div class="step"><strong>docker wellnav</strong><em>127.0.0.1:5050 · uvicorn</em></div>
+          <div class="arrow">↓</div>
+          <div class="step"><strong>SQLite volume</strong><em>wellnav, pipelines, disposal</em></div>
+        </div>
+        <p class="note">Out: Stripe, Twilio, SMTP, USGS National Map tiles. ufw allows 2222, 80, 443.</p>
+      </section>
+
+      <section class="host shared" data-part="shared">
+        <h3>GovDeals host — three apps</h3>
+        <div class="ip">95.216.155.122 · 2a01:4f9:c015:4ef0::1</div>
+        <div class="meta">Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals</div>
+        <div class="bus">nginx is the only public HTTP listener · :80 :443 :8080 :8443</div>
+        <div class="services">
+          <div class="svc">
+            <div><strong>Simba CRM</strong><em>crm.simba.services</em></div>
+            <span class="to">→</span>
+            <div><strong>127.0.0.1:8787</strong><em>ledger-router</em></div>
+            <span class="to">→</span>
+            <div><strong>Postgres :5432</strong><em>ledger_meta, ledger_blobs</em></div>
+          </div>
+          <div class="svc">
+            <div><strong>GovDeals</strong><em>gd, /govdeals, :8080, :8443</em></div>
+            <span class="to">→</span>
+            <div><strong>127.0.0.1:8765</strong><em>govdeals.service</em></div>
+            <span class="to">→</span>
+            <div><strong>SQLite</strong><em>govdeals.db</em></div>
+          </div>
+          <div class="svc">
+            <div><strong>Maintenance</strong><em>maintenance.simba.services</em></div>
+            <span class="to">→</span>
+            <div><strong>127.0.0.1:8090</strong><em>maintenance</em></div>
+            <span class="to">→</span>
+            <div><strong>SQLite</strong><em>maintenance.db</em></div>
+          </div>
+        </div>
+        <p class="note">ufw allows 22, 80, 443, 8080, 8443. App ports stay on localhost. :8080 is origin-direct HTTP.</p>
+      </section>
+
+      <section class="host" data-part="propeval">
+        <h3>Property Evaluation</h3>
+        <div class="ip">204.168.132.89</div>
+        <div class="meta">SSH propeval:2222 · Hetzner CPX22</div>
+        <div class="flow">
+          <div class="step"><strong>nginx :80 :443</strong><em>propeval.simba.services</em></div>
+          <div class="arrow">↓</div>
+          <div class="step"><strong>bare IP :80</strong><em>same nginx, default server</em></div>
+          <div class="arrow">↓</div>
+          <div class="step"><strong>docker propeval</strong><em>127.0.0.1:5050 · uvicorn</em></div>
+        </div>
+        <p class="note">Out: TX, NM, OK, LA GIS during ingest. ufw allows 2222, 80, 443.</p>
+      </section>
+    </div>
+
+    <div class="outs">
+      <article class="out" data-part="shared wellnav">
+        <strong>mail.simba.services</strong>
+        <span>95.217.8.248. Maintenance and Well Navigation. No project folder in this directory.</span>
+      </article>
+      <article class="out" data-part="shared">
+        <strong>www.govdeals.com</strong>
+        <span>Catalog scan every 4 hours. Hook poll every 30 seconds. From govdeals.service only.</span>
+      </article>
+      <article class="out" data-part="shared">
+        <strong>api.samsara.com</strong>
+        <span>Vehicle list and odometers. Daily check 5:00 PM Central. From Maintenance only.</span>
+      </article>
+      <article class="out" data-part="wellnav propeval">
+        <strong>Other upstreams</strong>
+        <span>Stripe, Twilio, and USGS tiles from Well Navigation. State GIS from Property Evaluation ingest.</span>
+      </article>
+    </div>
+  </div>
+
+  <p class="caption">Live HTTP probe 2026-09-23 20:33 UTC, plus DNS and the deploy docs in this directory. CRM health also reported 4 users and 4 blob objects. Port 80 on each name redirects to HTTPS except the bare Property Evaluation IP, which proxies straight to the app.</p>
+
+  <h2>Public routes</h2>
+  <table id="routes">
+    <thead>
+      <tr>
+        <th>Project</th><th>Public name</th><th>Edge</th><th>Process</th><th>Store</th><th>Probe</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>SSH</h2>
+  <table id="ssh">
+    <thead>
+      <tr><th>Machine</th><th>Address</th><th>User</th><th>Local config</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="ssh-site" hidden>Website has no SSH host in this directory. It deploys to Netlify.</p>
+
+  <h2>Outbound from the running processes</h2>
+  <table id="outbound">
+    <thead>
+      <tr><th>From</th><th>To</th><th>What crosses</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="outbound-site" hidden>The Netlify site sends application and contact mail through Telegram functions. It does not call the three Ubuntu hosts.</p>
+
+  <div class="aside">
+    <strong>In this directory, not serving on a remote host</strong>
+    Archive, backoffice, FAA, Java_Test, Micro-Turbine, Samsara_backup, and crm_govdeals_combined have no live server of their own. The combined folder is a snapshot of the GovDeals host. Samsara fleet has a Render blueprint, but fleet.simba.services does not resolve and samsara-fleet-live.onrender.com/healthz returned 404. The older CRM ledger URL on 62.238.113.20:8787 timed out. That address is the Well Navigation machine. CRM listens on 95.216.155.122.
+  </div>
+</main>
+<script>
+  const routes = [
+    ["shared", "Simba CRM", "crm.simba.services", "Cloudflare :443 → nginx", "ledger-router 127.0.0.1:8787", "PostgreSQL :5432 ledger_meta, ledger_blobs", "200 /health · schema 1.7.0"],
+    ["shared", "GovDeals", "gd.simba.services", "Cloudflare :443 → nginx", "govdeals 127.0.0.1:8765", "SQLite /opt/govdeals/data/govdeals.db", "200 /"],
+    ["shared", "GovDeals", "crm.simba.services/govdeals", "Cloudflare :443, prefix stripped", "govdeals 127.0.0.1:8765", "same SQLite file", "same process"],
+    ["shared", "GovDeals", "95.216.155.122:8080", "origin-direct HTTP", "govdeals 127.0.0.1:8765", "same SQLite file", "200 /"],
+    ["shared", "GovDeals", "crm.simba.services:8443", "origin HTTPS, CRM certificate", "govdeals 127.0.0.1:8765", "same SQLite file", "200 /"],
+    ["shared", "Maintenance", "maintenance.simba.services", "Cloudflare :443 → nginx", "maintenance 127.0.0.1:8090", "SQLite /var/lib/maintenance/maintenance.db", "200 /health"],
+    ["wellnav", "Well Navigation", "wellnav.simba.services", "Cloudflare :443 → nginx", "docker wellnav 127.0.0.1:5050", "SQLite volume well_navigation_wellnav-data", "200 /healthz"],
+    ["propeval", "Property Evaluation", "propeval.simba.services", "Cloudflare :443 → nginx", "docker propeval 127.0.0.1:5050", "checkout bind-mounted at /app", "200 /healthz"],
+    ["propeval", "Property Evaluation", "204.168.132.89:80", "nginx default server, bare IP", "docker propeval 127.0.0.1:5050", "same checkout", "documented, not re-probed by IP"],
+    ["site", "Website", "simba.services", "apex 75.2.60.5", "Netlify static + functions", "no database in this repo", "200 /"],
+    ["site", "Website", "www.simba.services", "Cloudflare, then Netlify", "Netlify static + functions", "Telegram via Netlify functions", "200 /"]
+  ];
+  const ssh = [
+    ["shared", "GovDeals host", "95.216.155.122:22", "root", "Documented. Not in the local SSH config"],
+    ["wellnav", "Well Navigation", "62.238.113.20:2222", "wellnav", "Present as Host wellnav"],
+    ["propeval", "Property Evaluation", "204.168.132.89:2222", "propeval", "Cloud-init. Not in the local SSH config"]
+  ];
+  const outbound = [
+    ["shared", "Maintenance", "api.samsara.com", "Fleet vehicles and odometers, 5:00 PM Central"],
+    ["shared", "Maintenance", "mail.simba.services", "Due-service mail from maintenance@simba.services"],
+    ["shared", "GovDeals", "www.govdeals.com", "Auction catalog and asset hosts"],
+    ["wellnav", "Well Navigation", "mail.simba.services", "Registration and password OTP"],
+    ["wellnav", "Well Navigation", "Stripe", "Seat checkout webhook at /billing/webhook"],
+    ["wellnav", "Well Navigation", "Twilio", "SMS when configured; SMTP is the other path"],
+    ["wellnav", "Well Navigation", "basemap.nationalmap.gov", "USGS tiles via /offline/tiles"],
+    ["propeval", "Property Evaluation", "State GIS", "TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest"],
+    ["shared", "Simba CRM desk", "unpkg.com, cdn.jsdelivr.net", "Browser loads HTMX and Gridstack"]
+  ];
+
+  function fill(table, rows, focus) {
+    const body = table.querySelector("tbody");
+    body.replaceChildren();
+    rows.filter((row) => focus === "all" || row[0] === focus).forEach((row) => {
+      const tr = document.createElement("tr");
+      row.slice(1).forEach((cell) => {
+        const td = document.createElement("td");
+        td.textContent = cell;
+        if (String(cell).startsWith("200")) td.dataset.ok = "1";
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+    return body.children.length;
+  }
+
+  function apply(focus) {
+    document.querySelectorAll("[data-part]").forEach((node) => {
+      const parts = node.getAttribute("data-part").split(" ");
+      node.classList.toggle("dim", focus !== "all" && !parts.includes(focus));
+    });
+    document.querySelectorAll(".filters button").forEach((button) => {
+      button.setAttribute("aria-pressed", button.dataset.focus === focus ? "true" : "false");
+    });
+    fill(document.querySelector("#routes"), routes, focus);
+    const sshCount = fill(document.querySelector("#ssh"), ssh, focus);
+    document.querySelector("#ssh").hidden = focus === "site";
+    document.querySelector("#ssh-site").hidden = focus !== "site";
+    const outCount = fill(document.querySelector("#outbound"), outbound, focus);
+    document.querySelector("#outbound").hidden = outCount === 0;
+    document.querySelector("#outbound-site").hidden = outCount !== 0;
+    if (focus === "site") document.querySelector("#ssh").hidden = true;
+    void sshCount;
+  }
+
+  document.querySelector(".filters").addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    apply(button.dataset.focus);
+  });
+  apply("all");
+</script>
+</body>
+</html>
