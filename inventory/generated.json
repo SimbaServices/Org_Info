@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-28 05:19 UTC",
+  "generated_at": "2026-09-28 05:20 UTC",
   "services": [
     {
       "repo": "Energy_Infr",
       "name": "Energy Infrastructure",
       "live": true,
       "host": "propeval",
-      "source": "local:C:\\Users\\Sam Parker\\Simba\\Energy_Infr\\network.yaml",
+      "source": "github:Energy_Infr/network.yaml",
       "public": [
         {
           "name": "204.168.132.89:8443",
@@ -27,7 +27,7 @@
       "name": "Well Navigation",
       "live": true,
       "host": "wellnav",
-      "source": "local:C:\\Users\\Sam Parker\\Simba\\Well_Navigation\\network.yaml",
+      "source": "github:Well_Navigation/network.yaml",
       "public": [
         {
           "name": "wellnav.simba.services",
@@ -53,41 +53,11 @@
       ]
     },
     {
-      "repo": "Simba_CRM",
-      "name": "Simba CRM",
-      "live": true,
-      "host": "shared",
-      "source": "github:Simba_CRM/network.yaml",
-      "public": [
-        {
-          "name": "crm.simba.services",
-          "url": "https://crm.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200 \u00b7 schema 1.7.0 \u00b7 4 users"
-        }
-      ]
-    },
-    {
-      "repo": "simba-maintenance",
-      "name": "Maintenance",
-      "live": true,
-      "host": "shared",
-      "source": "github:simba-maintenance/network.yaml",
-      "public": [
-        {
-          "name": "maintenance.simba.services",
-          "url": "https://maintenance.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200"
-        }
-      ]
-    },
-    {
       "repo": "SS_Property_Evaluation",
       "name": "Property Evaluation",
       "live": true,
       "host": "propeval",
-      "source": "fallback:SS_Property_Evaluation.yaml",
+      "source": "org:SS_Property_Evaluation.yaml",
       "public": [
         {
           "name": "propeval.simba.services",
@@ -108,8 +78,38 @@
       "name": "Samsara fleet",
       "live": false,
       "host": null,
-      "source": "fallback:Samsara.yaml",
+      "source": "org:Samsara.yaml",
       "public": []
+    },
+    {
+      "repo": "Simba_CRM",
+      "name": "Simba CRM",
+      "live": true,
+      "host": "shared",
+      "source": "org:Simba_CRM.yaml",
+      "public": [
+        {
+          "name": "crm.simba.services",
+          "url": "https://crm.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200 \u00b7 schema 1.7.0 \u00b7 4 users"
+        }
+      ]
+    },
+    {
+      "repo": "simba-maintenance",
+      "name": "Maintenance",
+      "live": true,
+      "host": "shared",
+      "source": "org:simba-maintenance.yaml",
+      "public": [
+        {
+          "name": "maintenance.simba.services",
+          "url": "https://maintenance.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
     },
     {
       "repo": "Website",
@@ -133,31 +133,6 @@
       ]
     }
   ],
-  "missing": [
-    {
-      "name": "clone",
-      "url": "https://github.com/SimbaServices/clone",
-      "description": "Stalwart 0.15.3 install cloned from mail.simba.services for migration.",
-      "private": true
-    },
-    {
-      "name": "FAA",
-      "url": "https://github.com/SimbaServices/FAA",
-      "description": "APP-162866 Part 107 waiver package for the Greenwood-Midkiff route.",
-      "private": true
-    },
-    {
-      "name": "backoffice-archive",
-      "url": "https://github.com/SimbaServices/backoffice-archive",
-      "description": "test create permission",
-      "private": true
-    },
-    {
-      "name": "backoffice",
-      "url": "https://github.com/SimbaServices/backoffice",
-      "description": "",
-      "private": true
-    }
-  ],
+  "missing": [],
   "drift": []
 }
