@@ -1,7 +1,4 @@
-# Fallback until SimbaServices/Energy_Infr has network.yaml readable by generate.
-# Same host as Property Evaluation. Do not put 8443 on the GovDeals shared host.
 schema: 1
-org_extra: true
 repo: Energy_Infr
 name: Energy Infrastructure
 id: energy
@@ -10,7 +7,7 @@ host: propeval
 public:
 - name: 204.168.132.89:8443
   url: https://204.168.132.89:8443/
-  edge: nginx :8443 static, Let's Encrypt IP certificate
+  edge: nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate
   health: https://204.168.132.89:8443/
 - name: 204.168.132.89:8444
   url: https://204.168.132.89:8444/
@@ -22,21 +19,23 @@ process:
   name: energy-surface.service
   bind: 127.0.0.1:8766
   listen_public: false
-  runtime: sandbox /api only; production map is static nginx
-store: db/us_pipelines.sqlite
+  runtime: /api/ on both 8443 and 8444; map tiles and layer data stay static nginx
+store: SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB
+  Texas appraisal rolls behind /api/
 edge_steps:
 - title: nginx :8443
   detail: 204.168.132.89 · /var/www/energy
 - title: nginx :8444
   detail: sandbox · /var/www/energy-sandbox
 - title: energy-surface.service
-  detail: 127.0.0.1:8766 · sandbox /api only
+  detail: 127.0.0.1:8766 · /api for 8443 and 8444
 outbound:
 - to: State public well services
   what: Monthly agent refresh of vented and flared layers
 - to: EIA and HIFLD
   what: Pipeline, capacity, and transmission layers in the database
-notes: Shares the Property Evaluation host. Ports 80 and 443 stay on propeval.simba.services.
-  This map is a separate nginx root on 8443. Sandbox is 8444. TLS is a short-lived
-  Let's Encrypt certificate for the public IP, renewed by certbot-energy.timer.
-  energy-agents.timer publishes web/ to /var/www/energy on the 1st of each month.
+notes: Shares the Property Evaluation host (SSH propeval:2222). Ports 80 and 443 stay
+  on propeval.simba.services. This map is a separate nginx root on 8443. Sandbox is
+  8444. TLS is a short-lived Let's Encrypt certificate for the public IP, renewed by
+  certbot-energy.timer. energy-agents.timer publishes web/ to /var/www/energy on the
+  1st of each month.
