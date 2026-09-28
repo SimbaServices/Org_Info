@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-09-28 04:54 UTC",
+  "generated_at": "2026-09-28 05:19 UTC",
   "services": [
     {
       "repo": "Energy_Infr",
       "name": "Energy Infrastructure",
       "live": true,
       "host": "propeval",
-      "source": "fallback:Energy_Infr.yaml",
+      "source": "local:C:\\Users\\Sam Parker\\Simba\\Energy_Infr\\network.yaml",
       "public": [
         {
           "name": "204.168.132.89:8443",
           "url": "https://204.168.132.89:8443/",
-          "edge": "nginx :8443 static, Let's Encrypt IP certificate",
+          "edge": "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
           "probe": "200"
         },
         {

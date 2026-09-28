@@ -95,7 +95,9 @@ hosts:
 
   - id: propeval
     label: Property Evaluation
+    filter_label: Property Evaluation
     kind: ubuntu
+    shared: true
     order: 30
     ipv4: 204.168.132.89
     meta: SSH propeval:2222 · Hetzner CPX22

@@ -20,8 +20,8 @@ process:
   bind: 127.0.0.1:8766
   listen_public: false
   runtime: /api/ on both 8443 and 8444; map tiles and layer data stay static nginx
-store: SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB
-  Texas appraisal rolls behind /api/
+store: SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite
+  2.9 GB Texas appraisal rolls behind /api/
 edge_steps:
 - title: nginx :8443
   detail: 204.168.132.89 · /var/www/energy
@@ -36,6 +36,6 @@ outbound:
   what: Pipeline, capacity, and transmission layers in the database
 notes: Shares the Property Evaluation host (SSH propeval:2222). Ports 80 and 443 stay
   on propeval.simba.services. This map is a separate nginx root on 8443. Sandbox is
-  8444. TLS is a short-lived Let's Encrypt certificate for the public IP, renewed by
-  certbot-energy.timer. energy-agents.timer publishes web/ to /var/www/energy on the
-  1st of each month.
+  8444. TLS is a short-lived Let's Encrypt certificate for the public IP, renewed
+  by certbot-energy.timer. energy-agents.timer publishes web/ to /var/www/energy on
+  the 1st of each month.

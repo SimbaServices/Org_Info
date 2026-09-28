@@ -457,9 +457,10 @@ def js_rows(rows: list[list[str]]) -> str:
 
 def host_card(host: dict, apps: list[dict]) -> str:
     hid = host["id"]
-    shared = bool(host.get("shared"))
+    multi = len(apps) > 1
+    shared = bool(host.get("shared")) or multi
     title = host.get("label") or hid
-    if shared and len(apps) > 1:
+    if multi:
         title = f"{title} — {len(apps)} apps"
     ips = " · ".join(p for p in (host.get("ipv4"), host.get("ipv6")) if p)
     meta = host.get("meta") or ""
@@ -469,7 +470,7 @@ def host_card(host: dict, apps: list[dict]) -> str:
     ufw = host.get("ufw")
     if ufw:
         note_bits.append("ufw allows " + ", ".join(str(x) for x in ufw) + ".")
-    if not shared:
+    if not multi:
         for app in apps:
             if app.get("notes"):
                 text = str(app["notes"]).strip()
@@ -529,7 +530,7 @@ def host_card(host: dict, apps: list[dict]) -> str:
         body = f"<div class=\"flow\">{''.join(steps)}</div>"
 
     return (
-        f"<section class=\"host{' shared' if shared else ''}\" data-part=\"{e(hid)}\">"
+        f"<section class=\"host{' shared' if shared else ''}{' multi' if multi else ''}\" data-part=\"{e(hid)}\">"
         f"<h3>{e(title)}</h3>"
         f"<div class=\"ip\">{e(ips)}</div>"
         f"<div class=\"meta\">{e(meta)}</div>"
@@ -798,11 +799,23 @@ def render_html(
     .arrow {{ color: var(--faint); font-size: 12px; padding-left: 8px; }}
     .svc {{
       display: grid;
-      grid-template-columns: 1.3fr auto 1fr auto 0.8fr;
+      grid-template-columns: minmax(0, 1.3fr) auto minmax(0, 1fr) auto minmax(0, 0.8fr);
       gap: 8px;
       align-items: center;
     }}
+    .svc > div {{ min-width: 0; overflow-wrap: anywhere; }}
     .svc .to {{ color: var(--faint); }}
+    .hosts > .host:first-child .svc,
+    .hosts > .host:last-child .svc {{
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }}
+    .hosts > .host:first-child .svc .to,
+    .hosts > .host:last-child .svc .to {{
+      display: none;
+    }}
     .note {{ color: var(--faint); font-size: 11px; margin-top: 10px; }}
     .key {{
       margin: 8px 0 0;

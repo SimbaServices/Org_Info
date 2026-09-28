@@ -111,6 +111,11 @@ def apply_live_to_hosts(hosts: dict[str, dict], snapshots: dict[str, dict]) -> N
         host["live_at"] = snap.get("collected_at")
         if snap.get("hostname"):
             host["live_hostname"] = snap["hostname"]
+        declared = set()
+        for item in host.get("public_listeners") or []:
+            digits = "".join(ch for ch in str(item) if ch.isdigit())
+            if digits:
+                declared.add(int(digits))
         ports = live_public_ports(snap)
         if ports:
             host["public_listeners"] = [str(p) for p in ports]
@@ -123,7 +128,7 @@ def apply_live_to_hosts(hosts: dict[str, dict], snapshots: dict[str, dict]) -> N
             host["ufw"] = allows
         notes = host.get("notes") or ""
         extra = []
-        unexpected = [p for p in ports if p not in {80, 443}]
+        unexpected = [p for p in ports if p not in {80, 443} | declared]
         if unexpected:
             extra.append("Unexpected public ports: " + ", ".join(f":{p}" for p in unexpected) + ".")
         if extra:
