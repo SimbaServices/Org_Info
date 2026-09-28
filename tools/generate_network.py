@@ -1047,7 +1047,7 @@ def main() -> int:
     parser.add_argument("--write-fallbacks", action="store_true")
     parser.add_argument("--no-probe", action="store_true")
     parser.add_argument("--no-collect", action="store_true")
-    parser.add_argument("--timeout", type=float, default=10.0)
+    parser.add_argument("--timeout", type=float, default=45.0)
     args = parser.parse_args()
 
     hosts_cfg = load_yaml(ROOT / "inventory" / "hosts.yaml")

@@ -1,8 +1,18 @@
 {
   "schema": 1,
-  "collected_at": "2026-09-23 21:42 UTC",
+  "collected_at": "2026-09-28 04:54 UTC",
   "hostname": "ubuntu-4gb-hel1-1",
   "ss": [
+    {
+      "addr": "0.0.0.0",
+      "port": 8444,
+      "public": true
+    },
+    {
+      "addr": "0.0.0.0",
+      "port": 8443,
+      "public": true
+    },
     {
       "addr": "127.0.0.53",
       "port": 53,
@@ -39,6 +49,21 @@
       "public": false
     },
     {
+      "addr": "127.0.0.1",
+      "port": 8766,
+      "public": false
+    },
+    {
+      "addr": "[::]",
+      "port": 8444,
+      "public": true
+    },
+    {
+      "addr": "[::]",
+      "port": 8443,
+      "public": true
+    },
+    {
       "addr": "[::]",
       "port": 2222,
       "public": true
@@ -59,13 +84,81 @@
     "allows": [
       "2222/tcp",
       "80/tcp",
-      "443/tcp"
+      "443/tcp",
+      "8443/tcp",
+      "8444/tcp"
     ],
     "raw_ok": true
   },
   "nginx": {
     "ok": true,
     "servers": [
+      {
+        "listen": [
+          {
+            "addr": "*",
+            "port": 8443,
+            "ssl": true,
+            "default": false
+          },
+          {
+            "addr": "::",
+            "port": 8443,
+            "ssl": true,
+            "default": false
+          }
+        ],
+        "server_names": [
+          "204.168.132.89"
+        ],
+        "locations": [
+          {
+            "path": "/api/",
+            "proxy_pass": "http://127.0.0.1:8766"
+          },
+          {
+            "path": "/data/",
+            "proxy_pass": null
+          },
+          {
+            "path": "\\.(?:js|css|html)$",
+            "proxy_pass": null
+          }
+        ]
+      },
+      {
+        "listen": [
+          {
+            "addr": "*",
+            "port": 8444,
+            "ssl": true,
+            "default": false
+          },
+          {
+            "addr": "::",
+            "port": 8444,
+            "ssl": true,
+            "default": false
+          }
+        ],
+        "server_names": [
+          "204.168.132.89"
+        ],
+        "locations": [
+          {
+            "path": "/api/",
+            "proxy_pass": "http://127.0.0.1:8766"
+          },
+          {
+            "path": "/data/",
+            "proxy_pass": null
+          },
+          {
+            "path": "\\.(?:js|css|html)$",
+            "proxy_pass": null
+          }
+        ]
+      },
       {
         "listen": [
           {
@@ -161,6 +254,10 @@
     {
       "name": "docker.service",
       "line": "docker.service loaded active running"
+    },
+    {
+      "name": "energy-surface.service",
+      "line": "energy-surface.service loaded active running"
     },
     {
       "name": "nginx.service",

@@ -36,6 +36,7 @@ local_roots:
   Well_Navigation: Well_Navigation
   SS_Property_Evaluation: SS_Property_Evaluation
   Samsara: Samsara
+  Energy_Infr: Energy_Infr
 
 exclude_from_missing:
   - Org_Info
@@ -107,10 +108,14 @@ hosts:
     public_listeners:
       - "80"
       - "443"
+      - "8443"
+      - "8444"
     ufw:
       - "2222"
       - "80"
       - "443"
+      - "8443"
+      - "8444"
 
   - id: site
     label: Website

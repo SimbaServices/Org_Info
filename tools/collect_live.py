@@ -19,6 +19,56 @@ except ImportError:  # pragma: no cover
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "tools" / "host_snapshot.py"
 LIVE_DIR = ROOT / "inventory" / "live"
+DEFAULT_IDENTITY = Path.home() / ".ssh" / "id_ed25519_wellnav"
+
+
+def ssh_path(path: Path) -> str:
+    """OpenSSH on Windows splits UserKnownHostsFile on spaces; use 8.3 or temp."""
+    resolved = path.resolve()
+    text = str(resolved)
+    if " " not in text:
+        return text.replace("\\", "/")
+    return str(resolved).replace("\\", "/")
+
+
+def usable_known_hosts(dest: Path) -> Path:
+    """Windows OpenSSH treats an unquoted space as another argument."""
+    dest = dest.resolve()
+    if " " not in str(dest):
+        return dest
+    candidates = [
+        Path(r"C:\Windows\Temp\simba_network_known_hosts"),
+        Path("/tmp/simba_network_known_hosts"),
+    ]
+    for tmp in candidates:
+        try:
+            tmp.parent.mkdir(parents=True, exist_ok=True)
+            tmp.write_bytes(dest.read_bytes())
+            if " " not in str(tmp):
+                return tmp
+        except OSError:
+            continue
+    return dest
+
+
+def identity_args() -> list[str]:
+    env_path = os.environ.get("SIMBA_SSH_KEY_FILE")
+    candidates = []
+    if env_path:
+        candidates.append(Path(env_path))
+    candidates.append(DEFAULT_IDENTITY)
+    candidates.append(Path.home() / ".ssh" / "id_ed25519")
+    args: list[str] = []
+    seen: set[str] = set()
+    for path in candidates:
+        if not path.is_file():
+            continue
+        key = str(path.resolve())
+        if key in seen:
+            continue
+        seen.add(key)
+        args.extend(["-i", key])
+    return args
 
 
 def load_hosts(path: Path) -> list[dict]:
@@ -51,6 +101,8 @@ def ssh_snapshot(host: dict, known_hosts: Path, timeout: int) -> dict:
     port = str(ssh.get("port") or 22)
     script = SNAPSHOT.read_bytes()
     target = f"{user}@{address}"
+    identities = identity_args()
+    known = usable_known_hosts(known_hosts)
     base = [
         "ssh",
         "-o",
@@ -58,9 +110,10 @@ def ssh_snapshot(host: dict, known_hosts: Path, timeout: int) -> dict:
         "-o",
         f"ConnectTimeout={timeout}",
         "-o",
-        f"UserKnownHostsFile={str(known_hosts.resolve()).replace(chr(92), '/')}",
+        f"UserKnownHostsFile={ssh_path(known)}",
         "-o",
-        "IdentitiesOnly=yes",
+        "IdentitiesOnly=yes" if identities else "IdentitiesOnly=no",
+        *identities,
         "-p",
         port,
         target,
@@ -103,12 +156,25 @@ def collect(hosts: list[dict], timeout: int) -> dict[str, dict]:
             results[hid] = snap
             print(f"live {hid}: ok hostname={snap.get('hostname')}", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 — one host must not stop the rest
-            results[hid] = {
-                "host_id": hid,
-                "ok": False,
-                "error": str(exc),
-            }
-            print(f"live {hid}: {exc}", file=sys.stderr)
+            prev_path = LIVE_DIR / f"{hid}.json"
+            kept = None
+            if prev_path.is_file():
+                try:
+                    prev = json.loads(prev_path.read_text(encoding="utf-8"))
+                except json.JSONDecodeError:
+                    prev = None
+                if isinstance(prev, dict) and prev.get("ok"):
+                    kept = prev
+            if kept:
+                results[hid] = kept
+                print(f"live {hid}: {exc}; kept previous snapshot", file=sys.stderr)
+            else:
+                results[hid] = {
+                    "host_id": hid,
+                    "ok": False,
+                    "error": str(exc),
+                }
+                print(f"live {hid}: {exc}", file=sys.stderr)
         (LIVE_DIR / f"{hid}.json").write_text(
             json.dumps(results[hid], indent=2) + "\n",
             encoding="utf-8",
@@ -139,7 +205,7 @@ def load_saved() -> dict[str, dict]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--hosts", type=Path, default=ROOT / "inventory" / "hosts.yaml")
-    parser.add_argument("--timeout", type=int, default=15)
+    parser.add_argument("--timeout", type=int, default=45)
     args = parser.parse_args()
     collect(load_hosts(args.hosts), args.timeout)
     return 0

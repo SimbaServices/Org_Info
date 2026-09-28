@@ -34,6 +34,7 @@ KEEP_UNITS = (
     "maintenance",
     "wellnav",
     "propeval",
+    "energy",
     "caddy",
     "traefik",
     "uvicorn",

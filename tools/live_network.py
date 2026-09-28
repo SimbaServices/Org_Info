@@ -161,8 +161,21 @@ def reconcile(
                 )
             continue
 
+        declared_ports: set[int] = set()
+        for _svc, route, _key in declared_by_host.get(hid, []):
+            url = (route.get("url") or "").strip()
+            if url.startswith("http"):
+                port = urlparse(url).port
+                if port:
+                    declared_ports.add(port)
+            name = (route.get("name") or "").strip()
+            if ":" in name:
+                tail = name.rsplit(":", 1)[-1]
+                if tail.isdigit():
+                    declared_ports.add(int(tail))
+
         for port in live_public_ports(snap):
-            if port not in {80, 443}:
+            if port not in {80, 443} | declared_ports:
                 drift.append(
                     {
                         "host": hid,
