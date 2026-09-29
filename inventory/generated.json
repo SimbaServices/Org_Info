@@ -1,6 +1,21 @@
 {
-  "generated_at": "2026-09-28 12:12 UTC",
+  "generated_at": "2026-09-29 11:42 UTC",
   "services": [
+    {
+      "repo": "GovDeals",
+      "name": "GovDeals",
+      "live": true,
+      "host": "shared",
+      "source": "github:GovDeals/network.yaml",
+      "public": [
+        {
+          "name": "gd.simba.services",
+          "url": "https://gd.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
+    },
     {
       "repo": "Energy_Infr",
       "name": "Energy Infrastructure",
@@ -32,21 +47,6 @@
         {
           "name": "wellnav.simba.services",
           "url": "https://wellnav.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200"
-        }
-      ]
-    },
-    {
-      "repo": "GovDeals",
-      "name": "GovDeals",
-      "live": true,
-      "host": "shared",
-      "source": "github:GovDeals/network.yaml",
-      "public": [
-        {
-          "name": "gd.simba.services",
-          "url": "https://gd.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
           "probe": "200"
         }
