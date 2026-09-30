@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-09-29 11:42 UTC",
+  "generated_at": "2026-09-30 11:29 UTC",
   "services": [
     {
-      "repo": "GovDeals",
-      "name": "GovDeals",
+      "repo": "Well_Navigation",
+      "name": "Well Navigation",
       "live": true,
-      "host": "shared",
-      "source": "github:GovDeals/network.yaml",
+      "host": "wellnav",
+      "source": "github:Well_Navigation/network.yaml",
       "public": [
         {
-          "name": "gd.simba.services",
-          "url": "https://gd.simba.services/",
+          "name": "wellnav.simba.services",
+          "url": "https://wellnav.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
           "probe": "200"
         }
@@ -38,15 +38,15 @@
       ]
     },
     {
-      "repo": "Well_Navigation",
-      "name": "Well Navigation",
+      "repo": "GovDeals",
+      "name": "GovDeals",
       "live": true,
-      "host": "wellnav",
-      "source": "github:Well_Navigation/network.yaml",
+      "host": "shared",
+      "source": "github:GovDeals/network.yaml",
       "public": [
         {
-          "name": "wellnav.simba.services",
-          "url": "https://wellnav.simba.services/",
+          "name": "gd.simba.services",
+          "url": "https://gd.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
           "probe": "200"
         }
