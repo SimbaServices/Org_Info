@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30 15:52 UTC",
+  "generated_at": "2026-09-30 15:53 UTC",
   "services": [
     {
       "repo": "Well_Navigation",
@@ -12,6 +12,33 @@
           "name": "wellnav.simba.services",
           "url": "https://wellnav.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
+    },
+    {
+      "repo": "mail.simba.services",
+      "name": "Mail",
+      "live": true,
+      "host": "mail",
+      "source": "github:mail.simba.services/network.yaml",
+      "public": [
+        {
+          "name": "mail.simba.services",
+          "url": "https://mail.simba.services/",
+          "edge": "Stalwart :443 \u00b7 Let's Encrypt \u00b7 not Cloudflare",
+          "probe": "200"
+        },
+        {
+          "name": "simba.services MX",
+          "url": "smtp://mail.simba.services:587",
+          "edge": "MX 10 mail.simba.services \u00b7 submission :587 \u00b7 SMTPS :465",
+          "probe": "Inbound port 25 did not answer from the inventory workstation"
+        },
+        {
+          "name": "62.238.63.171:8080",
+          "url": "http://62.238.63.171:8080/",
+          "edge": "Stalwart account UI, cleartext",
           "probe": "200"
         }
       ]
@@ -53,11 +80,41 @@
       ]
     },
     {
+      "repo": "Simba_CRM",
+      "name": "Simba CRM",
+      "live": true,
+      "host": "shared",
+      "source": "github:Simba_CRM/network.yaml",
+      "public": [
+        {
+          "name": "crm.simba.services",
+          "url": "https://crm.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200 \u00b7 schema 1.7.0 \u00b7 4 users"
+        }
+      ]
+    },
+    {
+      "repo": "simba-maintenance",
+      "name": "Maintenance",
+      "live": true,
+      "host": "shared",
+      "source": "github:simba-maintenance/network.yaml",
+      "public": [
+        {
+          "name": "maintenance.simba.services",
+          "url": "https://maintenance.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
+    },
+    {
       "repo": "SS_Property_Evaluation",
       "name": "Property Evaluation",
       "live": true,
       "host": "propeval",
-      "source": "org:SS_Property_Evaluation.yaml",
+      "source": "fallback:SS_Property_Evaluation.yaml",
       "public": [
         {
           "name": "propeval.simba.services",
@@ -78,38 +135,8 @@
       "name": "Samsara fleet",
       "live": false,
       "host": null,
-      "source": "org:Samsara.yaml",
+      "source": "fallback:Samsara.yaml",
       "public": []
-    },
-    {
-      "repo": "Simba_CRM",
-      "name": "Simba CRM",
-      "live": true,
-      "host": "shared",
-      "source": "org:Simba_CRM.yaml",
-      "public": [
-        {
-          "name": "crm.simba.services",
-          "url": "https://crm.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200 \u00b7 schema 1.7.0 \u00b7 4 users"
-        }
-      ]
-    },
-    {
-      "repo": "simba-maintenance",
-      "name": "Maintenance",
-      "live": true,
-      "host": "shared",
-      "source": "org:simba-maintenance.yaml",
-      "public": [
-        {
-          "name": "maintenance.simba.services",
-          "url": "https://maintenance.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200"
-        }
-      ]
     },
     {
       "repo": "Website",
@@ -133,6 +160,25 @@
       ]
     }
   ],
-  "missing": [],
+  "missing": [
+    {
+      "name": "backoffice",
+      "url": "https://github.com/SimbaServices/backoffice",
+      "description": "",
+      "private": true
+    },
+    {
+      "name": "FAA",
+      "url": "https://github.com/SimbaServices/FAA",
+      "description": "APP-162866 Part 107 waiver package for the Greenwood-Midkiff route.",
+      "private": true
+    },
+    {
+      "name": "backoffice-archive",
+      "url": "https://github.com/SimbaServices/backoffice-archive",
+      "description": "test create permission",
+      "private": true
+    }
+  ],
   "drift": []
 }

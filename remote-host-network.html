@@ -76,7 +76,7 @@
     }
     .hosts {
       display: grid;
-      grid-template-columns: 250px 1fr 250px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 12px;
       margin-top: 14px;
     }
@@ -175,17 +175,17 @@
 <body>
 <main>
   <h1>Remote host network</h1>
-  <p class="lead">3 Ubuntu machine(s) plus any Netlify edge. Every *.simba.services name below is intended to answer through Cloudflare unless the row says otherwise.</p>
+  <p class="lead">4 Ubuntu machine(s) plus any Netlify edge. Every *.simba.services name below is intended to answer through Cloudflare unless the row says otherwise.</p>
 
   <div class="stats">
-    <div class="stat"><b>3</b><span>Ubuntu hosts</span></div>
-    <div class="stat ok"><b>6</b><span>Apps returning 200</span></div>
+    <div class="stat"><b>4</b><span>Ubuntu hosts</span></div>
+    <div class="stat ok"><b>7</b><span>Apps returning 200</span></div>
     <div class="stat"><b>2</b><span>Shared machine</span></div>
     <div class="stat"><b>0</b><span>Live vs declared drift</span></div>
   </div>
 
   <div class="filters" role="group" aria-label="Highlight a host">
-    <button type="button" data-focus="all" aria-pressed="true">All hosts</button><button type="button" data-focus="wellnav" aria-pressed="false">Well Navigation</button><button type="button" data-focus="shared" aria-pressed="false">GovDeals host</button><button type="button" data-focus="propeval" aria-pressed="false">Property Evaluation</button><button type="button" data-focus="site" aria-pressed="false">Website</button>
+    <button type="button" data-focus="all" aria-pressed="true">All hosts</button><button type="button" data-focus="wellnav" aria-pressed="false">Well Navigation</button><button type="button" data-focus="shared" aria-pressed="false">GovDeals host</button><button type="button" data-focus="propeval" aria-pressed="false">Property Evaluation</button><button type="button" data-focus="mail" aria-pressed="false">mail.simba.services</button><button type="button" data-focus="site" aria-pressed="false">Website</button>
   </div>
 
   <div class="schematic" id="schematic">
@@ -199,7 +199,7 @@
     </div>
 
     <div class="hosts">
-      <section class="host" data-part="wellnav"><h3>Well Navigation</h3><div class="ip">62.238.113.20</div><div class="meta">SSH wellnav:2222 · Hetzner CX23+</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>wellnav.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>docker wellnav</strong><em>127.0.0.1:5050 · uvicorn</em></div><div class="arrow">↓</div><div class="step"><strong>SQLite volume</strong><em>wellnav, pipelines, disposal</em></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp. Out Stripe, Twilio, SMTP, USGS National Map tiles. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVqXyW8P9yCPxCbAmcpfwPm16izPhu7a9vXG5Rp3ANa<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section><section class="host shared multi" data-part="shared"><h3>GovDeals host — 3 apps</h3><div class="ip">95.216.155.122 · 2a01:4f9:c015:4ef0::1</div><div class="meta">Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals</div><div class="bus">nginx is the only public HTTP listener · :80 :443</div><div class="services"><div class="svc"><div><strong>Simba CRM</strong><em>crm.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8787</strong><em>ledger-router.service</em></div><span class="to">→</span><div><strong>PostgreSQL</strong><em>PostgreSQL :5432 ledger_meta, ledger_blobs</em></div></div><div class="svc"><div><strong>GovDeals</strong><em>gd.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8765</strong><em>govdeals.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /opt/govdeals/data/govdeals.db</em></div></div><div class="svc"><div><strong>Maintenance</strong><em>maintenance.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8090</strong><em>maintenance.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /var/lib/maintenance/maintenance.db</em></div></div></div><p class="note">App ports stay on localhost. Do not expose 8787, 8765, or 8090. ufw allows OpenSSH, 80/tcp, 443/tcp.</p><p class="key"><b>Host key, port 22</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGoc7NWY2t8VSsyWrgY25f3FCoKJfBt5Xlp41gzur2Hy<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com<b>GitHub deploy key on this host</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSlY4Gl3/ffRbZ92RmP42CpgpszH13d+6DnGTupMX+L govdeals-readonly-deploy</p></section><section class="host shared multi" data-part="propeval"><h3>Property Evaluation — 2 apps</h3><div class="ip">204.168.132.89</div><div class="meta">SSH propeval:2222 · Hetzner CPX22</div><div class="bus">nginx is the only public HTTP listener · :80 :443 :8443 :8444</div><div class="services"><div class="svc"><div><strong>Energy Infrastructure</strong><em>204.168.132.89:8443, 204.168.132.89:8444</em></div><span class="to">→</span><div><strong>127.0.0.1:8766</strong><em>energy-surface.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/</em></div></div><div class="svc"><div><strong>Property Evaluation</strong><em>propeval.simba.services, 204.168.132.89:80</em></div><span class="to">→</span><div><strong>127.0.0.1:5050</strong><em>docker propeval</em></div><span class="to">→</span><div><strong>checkout</strong><em>checkout bind-mounted at /app</em></div></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp, 8443/tcp, 8444/tcp.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJu4ezqh4p85SBc7ylz1/3FXJZ3vQ2rlbL1eor6GU/sW<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section>
+      <section class="host" data-part="wellnav"><h3>Well Navigation</h3><div class="ip">62.238.113.20</div><div class="meta">SSH wellnav:2222 · Hetzner CX23+</div><div class="flow"><div class="step"><strong>nginx :80 :443</strong><em>wellnav.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>docker wellnav</strong><em>127.0.0.1:5050 · uvicorn</em></div><div class="arrow">↓</div><div class="step"><strong>SQLite volume</strong><em>wellnav, pipelines, disposal</em></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp. Out Stripe, Twilio, SMTP, USGS National Map tiles. ufw allows 2222, 80, 443.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVqXyW8P9yCPxCbAmcpfwPm16izPhu7a9vXG5Rp3ANa<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section><section class="host shared multi" data-part="shared"><h3>GovDeals host — 3 apps</h3><div class="ip">95.216.155.122 · 2a01:4f9:c015:4ef0::1</div><div class="meta">Ubuntu 26.04.1 · SSH root:22 · hostname GovDeals</div><div class="bus">nginx is the only public HTTP listener · :80 :443</div><div class="services"><div class="svc"><div><strong>Simba CRM</strong><em>crm.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8787</strong><em>ledger-router.service</em></div><span class="to">→</span><div><strong>PostgreSQL</strong><em>PostgreSQL :5432 ledger_meta, ledger_blobs</em></div></div><div class="svc"><div><strong>GovDeals</strong><em>gd.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8765</strong><em>govdeals.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /opt/govdeals/data/govdeals.db</em></div></div><div class="svc"><div><strong>Maintenance</strong><em>maintenance.simba.services</em></div><span class="to">→</span><div><strong>127.0.0.1:8090</strong><em>maintenance.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite /var/lib/maintenance/maintenance.db</em></div></div></div><p class="note">App ports stay on localhost. Do not expose 8787, 8765, or 8090. ufw allows OpenSSH, 80/tcp, 443/tcp.</p><p class="key"><b>Host key, port 22</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGoc7NWY2t8VSsyWrgY25f3FCoKJfBt5Xlp41gzur2Hy<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com<b>GitHub deploy key on this host</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGSlY4Gl3/ffRbZ92RmP42CpgpszH13d+6DnGTupMX+L govdeals-readonly-deploy</p></section><section class="host shared multi" data-part="propeval"><h3>Property Evaluation — 2 apps</h3><div class="ip">204.168.132.89</div><div class="meta">SSH propeval:2222 · Hetzner CPX22</div><div class="bus">nginx is the only public HTTP listener · :80 :443 :8443 :8444</div><div class="services"><div class="svc"><div><strong>Energy Infrastructure</strong><em>204.168.132.89:8443, 204.168.132.89:8444</em></div><span class="to">→</span><div><strong>127.0.0.1:8766</strong><em>energy-surface.service</em></div><span class="to">→</span><div><strong>SQLite</strong><em>SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/</em></div></div><div class="svc"><div><strong>Property Evaluation</strong><em>propeval.simba.services, 204.168.132.89:80</em></div><span class="to">→</span><div><strong>127.0.0.1:5050</strong><em>docker propeval</em></div><span class="to">→</span><div><strong>checkout</strong><em>checkout bind-mounted at /app</em></div></div></div><p class="note">ufw allows 2222/tcp, 80/tcp, 443/tcp, 8443/tcp, 8444/tcp.</p><p class="key"><b>Host key, port 2222</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJu4ezqh4p85SBc7ylz1/3FXJZ3vQ2rlbL1eor6GU/sW<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section><section class="host" data-part="mail"><h3>mail.simba.services</h3><div class="ip">62.238.63.171</div><div class="meta">SSH ubuntu:22 · Stalwart · Hetzner</div><div class="flow"><div class="step"><strong>Stalwart :443</strong><em>mail.simba.services webmail and JMAP</em></div><div class="arrow">↓</div><div class="step"><strong>SMTP :465 :587</strong><em>submission · banner mail.simba.services</em></div><div class="arrow">↓</div><div class="step"><strong>IMAP :143 :993</strong><em>IMAP and IMAPS</em></div><div class="arrow">↓</div><div class="step"><strong>POP3S :995 · sieve :4190</strong><em>POP3S and ManageSieve</em></div><div class="arrow">↓</div><div class="step"><strong>:8080</strong><em>same account UI, cleartext</em></div><div class="arrow">↓</div><div class="step"><strong>mailbox store</strong><em>/opt/stalwart/data</em></div></div><p class="note">MX for simba.services. DNS is 62.238.63.171, not Cloudflare. Maintenance sends due-service mail as maintenance@simba.services. Well Navigation sends registration and password OTP. Stalwart listens on 443, 465, 587, 143, 993, 995, 4190, and 8080. Mailbox store is /opt/stalwart/data. config.toml is not in git. Admin account (new): user admin@simba.services password cGdt7eLdoOcuE1FbZYFFShbM. Admin account (legacy): user admin password IHdGHyEHMa.</p><p class="key"><b>Host key, port 22</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAFs9lGvVVswFvbYgD10APf8xEv1ExnGZlpMcX+Vy2P0<b>Login ~/.ssh/id_ed25519</b>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com</p></section>
     </div>
 
     <div class="outs">
@@ -210,14 +210,14 @@
       <article class="out" data-part="propeval"><strong>State public well services</strong><span>Energy Infrastructure. Monthly agent refresh of vented and flared layers</span></article>
       <article class="out" data-part="propeval"><strong>EIA and HIFLD</strong><span>Energy Infrastructure. Pipeline, capacity, and transmission layers in the database</span></article>
       <article class="out" data-part="shared"><strong>www.govdeals.com</strong><span>GovDeals. Auction catalog every 4 hours. Hook poll every 30 seconds.</span></article>
-      <article class="out" data-part="propeval"><strong>State GIS</strong><span>Property Evaluation. TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest</span></article>
       <article class="out" data-part="shared"><strong>unpkg.com, cdn.jsdelivr.net</strong><span>Simba CRM. Browser loads HTMX and Gridstack</span></article>
       <article class="out" data-part="shared"><strong>api.samsara.com</strong><span>Maintenance. Vehicle list and odometers. Daily check 5:00 PM Central.</span></article>
+      <article class="out" data-part="propeval"><strong>State GIS</strong><span>Property Evaluation. TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest</span></article>
       <article class="out" data-part="site"><strong>Telegram</strong><span>Website. Application and contact mail via Netlify functions</span></article>
     </div>
   </div>
 
-  <p class="caption">Live HTTP probe 2026-09-30 11:29 UTC. 8 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
+  <p class="caption">Live HTTP probe 2026-09-30 15:53 UTC. 10 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
 
   <h2>Public routes</h2>
   <table id="routes">
@@ -259,7 +259,7 @@
 
   <div class="aside">
     <strong>Org repos not on a remote host</strong>
-    Samsara fleet: Render blueprint (samsara-fleet-live) exists in this repo. fleet.simba.services does not resolve and the Render health path has not been live. Not serving on a remote host. Maintenance on the GovDeals host is the live Samsara consumer. Add a network.yaml at the repo root (or deploy/network.yaml) to appear on this map.
+    backoffice, FAA, backoffice-archive have no network.yaml (or deploy/network.yaml) on the default branch. Samsara fleet: Render blueprint (samsara-fleet-live) exists in this repo. fleet.simba.services does not resolve and the Render health path has not been live. Not serving on a remote host. Maintenance on the GovDeals host is the live Samsara consumer. Add a network.yaml at the repo root (or deploy/network.yaml) to appear on this map.
   </div>
 </main>
 <script>
@@ -272,6 +272,33 @@
     "docker wellnav 127.0.0.1:5050",
     "SQLite volume well_navigation_wellnav-data (wellnav, pipelines, disposal)",
     "200 /healthz"
+  ],
+  [
+    "mail",
+    "Mail",
+    "mail.simba.services",
+    "Stalwart :443 · Let's Encrypt · not Cloudflare",
+    "stalwart.service 0.0.0.0:443",
+    "/opt/stalwart/data",
+    "200 /.well-known/jmap"
+  ],
+  [
+    "mail",
+    "Mail",
+    "simba.services MX",
+    "MX 10 mail.simba.services · submission :587 · SMTPS :465",
+    "stalwart.service 0.0.0.0:443",
+    "/opt/stalwart/data",
+    "Inbound port 25 did not answer from the inventory workstation"
+  ],
+  [
+    "mail",
+    "Mail",
+    "62.238.63.171:8080",
+    "Stalwart account UI, cleartext",
+    "stalwart.service 0.0.0.0:443",
+    "/opt/stalwart/data",
+    "200 /"
   ],
   [
     "propeval",
@@ -301,24 +328,6 @@
     "200 /"
   ],
   [
-    "propeval",
-    "Property Evaluation",
-    "propeval.simba.services",
-    "Cloudflare :443 → nginx",
-    "docker propeval 127.0.0.1:5050",
-    "checkout bind-mounted at /app",
-    "200 /healthz"
-  ],
-  [
-    "propeval",
-    "Property Evaluation",
-    "204.168.132.89:80",
-    "nginx default server, bare IP",
-    "docker propeval 127.0.0.1:5050",
-    "checkout bind-mounted at /app",
-    "Documented; not re-probed by IP"
-  ],
-  [
     "shared",
     "Simba CRM",
     "crm.simba.services",
@@ -335,6 +344,24 @@
     "maintenance.service 127.0.0.1:8090",
     "SQLite /var/lib/maintenance/maintenance.db",
     "200 /health"
+  ],
+  [
+    "propeval",
+    "Property Evaluation",
+    "propeval.simba.services",
+    "Cloudflare :443 → nginx",
+    "docker propeval 127.0.0.1:5050",
+    "checkout bind-mounted at /app",
+    "200 /healthz"
+  ],
+  [
+    "propeval",
+    "Property Evaluation",
+    "204.168.132.89:80",
+    "nginx default server, bare IP",
+    "docker propeval 127.0.0.1:5050",
+    "checkout bind-mounted at /app",
+    "Documented; not re-probed by IP"
   ],
   [
     "site",
@@ -404,6 +431,20 @@
     "propeval@204.168.132.89:2222",
     "Login ~/.ssh/id_ed25519",
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com"
+  ],
+  [
+    "mail",
+    "mail.simba.services",
+    "62.238.63.171:22",
+    "Host ed25519",
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAFs9lGvVVswFvbYgD10APf8xEv1ExnGZlpMcX+Vy2P0"
+  ],
+  [
+    "mail",
+    "mail.simba.services",
+    "ubuntu@62.238.63.171:22",
+    "Login ~/.ssh/id_ed25519",
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOBF/orsSQUSoeJhlN9XhS5/MNstJOraMD9HXyQ43VW samwayneparker@gmail.com"
   ]
 ];
   const outbound = [
@@ -450,12 +491,6 @@
     "Auction catalog every 4 hours. Hook poll every 30 seconds."
   ],
   [
-    "propeval",
-    "Property Evaluation",
-    "State GIS",
-    "TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest"
-  ],
-  [
     "shared",
     "Simba CRM",
     "unpkg.com, cdn.jsdelivr.net",
@@ -472,6 +507,12 @@
     "Maintenance",
     "mail.simba.services",
     "Due-service mail from maintenance@simba.services"
+  ],
+  [
+    "propeval",
+    "Property Evaluation",
+    "State GIS",
+    "TX RRC, NM OCD, OK CLO/OCC, LA SONRIS on ingest"
   ],
   [
     "site",

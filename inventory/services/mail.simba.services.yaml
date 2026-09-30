@@ -1,0 +1,47 @@
+schema: 1
+repo: mail.simba.services
+name: Mail
+id: mail
+live: true
+host: mail
+public:
+- name: mail.simba.services
+  url: https://mail.simba.services/
+  edge: Stalwart :443 · Let's Encrypt · not Cloudflare
+  health: https://mail.simba.services/.well-known/jmap
+- name: simba.services MX
+  url: smtp://mail.simba.services:587
+  edge: MX 10 mail.simba.services · submission :587 · SMTPS :465
+  probe: false
+  note: Inbound port 25 did not answer from the inventory workstation
+- name: 62.238.63.171:8080
+  url: http://62.238.63.171:8080/
+  edge: Stalwart account UI, cleartext
+  health: http://62.238.63.171:8080/
+process:
+  name: stalwart.service
+  bind: 0.0.0.0:443
+  listen_public: true
+  runtime: /opt/stalwart/bin/stalwart
+store: /opt/stalwart/data
+edge_steps:
+- title: Stalwart :443
+  detail: mail.simba.services webmail and JMAP
+- title: SMTP :465 :587
+  detail: submission · banner mail.simba.services
+- title: IMAP :143 :993
+  detail: IMAP and IMAPS
+- title: POP3S :995 · sieve :4190
+  detail: POP3S and ManageSieve
+- title: :8080
+  detail: same account UI, cleartext
+- title: mailbox store
+  detail: /opt/stalwart/data
+notes: 'MX for simba.services. DNS is 62.238.63.171, not Cloudflare. Maintenance sends
+  due-service mail as maintenance@simba.services. Well Navigation sends registration
+  and password OTP. Stalwart listens on 443, 465, 587, 143, 993, 995, 4190, and 8080.
+  Mailbox store is /opt/stalwart/data. config.toml is not in git. Admin account (new):
+  user admin@simba.services password cGdt7eLdoOcuE1FbZYFFShbM. Admin account (legacy):
+  user admin password IHdGHyEHMa.
+
+  '
