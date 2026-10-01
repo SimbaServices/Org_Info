@@ -1,6 +1,27 @@
 {
-  "generated_at": "2026-09-30 15:53 UTC",
+  "generated_at": "2026-10-01 11:58 UTC",
   "services": [
+    {
+      "repo": "Energy_Infr",
+      "name": "Energy Infrastructure",
+      "live": true,
+      "host": "propeval",
+      "source": "github:Energy_Infr/network.yaml",
+      "public": [
+        {
+          "name": "204.168.132.89:8443",
+          "url": "https://204.168.132.89:8443/",
+          "edge": "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
+          "probe": "200"
+        },
+        {
+          "name": "204.168.132.89:8444",
+          "url": "https://204.168.132.89:8444/",
+          "edge": "nginx sandbox :8444, /api/ to 127.0.0.1:8766",
+          "probe": "Sandbox copy; not probed"
+        }
+      ]
+    },
     {
       "repo": "Well_Navigation",
       "name": "Well Navigation",
@@ -40,27 +61,6 @@
           "url": "http://62.238.63.171:8080/",
           "edge": "Stalwart account UI, cleartext",
           "probe": "200"
-        }
-      ]
-    },
-    {
-      "repo": "Energy_Infr",
-      "name": "Energy Infrastructure",
-      "live": true,
-      "host": "propeval",
-      "source": "github:Energy_Infr/network.yaml",
-      "public": [
-        {
-          "name": "204.168.132.89:8443",
-          "url": "https://204.168.132.89:8443/",
-          "edge": "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
-          "probe": "200"
-        },
-        {
-          "name": "204.168.132.89:8444",
-          "url": "https://204.168.132.89:8444/",
-          "edge": "nginx sandbox :8444, /api/ to 127.0.0.1:8766",
-          "probe": "Sandbox copy; not probed"
         }
       ]
     },

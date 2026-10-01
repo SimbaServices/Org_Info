@@ -203,12 +203,12 @@
     </div>
 
     <div class="outs">
+      <article class="out" data-part="propeval"><strong>State public well services</strong><span>Energy Infrastructure. Monthly agent refresh of vented and flared layers</span></article>
+      <article class="out" data-part="propeval"><strong>EIA and HIFLD</strong><span>Energy Infrastructure. Pipeline, capacity, and transmission layers in the database</span></article>
       <article class="out" data-part="wellnav shared"><strong>mail.simba.services</strong><span>Registration and password OTP Due-service mail from maintenance@simba.services Used by Maintenance and Well Navigation. No SimbaServices repo of its own.</span></article>
       <article class="out" data-part="wellnav"><strong>Stripe</strong><span>Well Navigation. Seat checkout webhook at /billing/webhook</span></article>
       <article class="out" data-part="wellnav"><strong>Twilio</strong><span>Well Navigation. SMS when configured; SMTP is the other path</span></article>
       <article class="out" data-part="wellnav"><strong>basemap.nationalmap.gov</strong><span>Well Navigation. USGS tiles via /offline/tiles</span></article>
-      <article class="out" data-part="propeval"><strong>State public well services</strong><span>Energy Infrastructure. Monthly agent refresh of vented and flared layers</span></article>
-      <article class="out" data-part="propeval"><strong>EIA and HIFLD</strong><span>Energy Infrastructure. Pipeline, capacity, and transmission layers in the database</span></article>
       <article class="out" data-part="shared"><strong>www.govdeals.com</strong><span>GovDeals. Auction catalog every 4 hours. Hook poll every 30 seconds.</span></article>
       <article class="out" data-part="shared"><strong>unpkg.com, cdn.jsdelivr.net</strong><span>Simba CRM. Browser loads HTMX and Gridstack</span></article>
       <article class="out" data-part="shared"><strong>api.samsara.com</strong><span>Maintenance. Vehicle list and odometers. Daily check 5:00 PM Central.</span></article>
@@ -217,7 +217,7 @@
     </div>
   </div>
 
-  <p class="caption">Live HTTP probe 2026-09-30 15:53 UTC. 10 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
+  <p class="caption">Live HTTP probe 2026-10-01 11:58 UTC. 10 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
 
   <h2>Public routes</h2>
   <table id="routes">
@@ -265,6 +265,24 @@
 <script>
   const routes = [
   [
+    "propeval",
+    "Energy Infrastructure",
+    "204.168.132.89:8443",
+    "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
+    "energy-surface.service 127.0.0.1:8766",
+    "SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/",
+    "200 /"
+  ],
+  [
+    "propeval",
+    "Energy Infrastructure",
+    "204.168.132.89:8444",
+    "nginx sandbox :8444, /api/ to 127.0.0.1:8766",
+    "energy-surface.service 127.0.0.1:8766",
+    "SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/",
+    "Sandbox copy; not probed"
+  ],
+  [
     "wellnav",
     "Well Navigation",
     "wellnav.simba.services",
@@ -299,24 +317,6 @@
     "stalwart.service 0.0.0.0:443",
     "/opt/stalwart/data",
     "200 /"
-  ],
-  [
-    "propeval",
-    "Energy Infrastructure",
-    "204.168.132.89:8443",
-    "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
-    "energy-surface.service 127.0.0.1:8766",
-    "SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/",
-    "200 /"
-  ],
-  [
-    "propeval",
-    "Energy Infrastructure",
-    "204.168.132.89:8444",
-    "nginx sandbox :8444, /api/ to 127.0.0.1:8766",
-    "energy-surface.service 127.0.0.1:8766",
-    "SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/",
-    "Sandbox copy; not probed"
   ],
   [
     "shared",
@@ -449,6 +449,18 @@
 ];
   const outbound = [
   [
+    "propeval",
+    "Energy Infrastructure",
+    "State public well services",
+    "Monthly agent refresh of vented and flared layers"
+  ],
+  [
+    "propeval",
+    "Energy Infrastructure",
+    "EIA and HIFLD",
+    "Pipeline, capacity, and transmission layers in the database"
+  ],
+  [
     "wellnav",
     "Well Navigation",
     "mail.simba.services",
@@ -471,18 +483,6 @@
     "Well Navigation",
     "basemap.nationalmap.gov",
     "USGS tiles via /offline/tiles"
-  ],
-  [
-    "propeval",
-    "Energy Infrastructure",
-    "State public well services",
-    "Monthly agent refresh of vented and flared layers"
-  ],
-  [
-    "propeval",
-    "Energy Infrastructure",
-    "EIA and HIFLD",
-    "Pipeline, capacity, and transmission layers in the database"
   ],
   [
     "shared",
