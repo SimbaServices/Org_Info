@@ -3,3 +3,7 @@ password: 7i_t8UrFRrwDXmk
 
 pi-device-name: fuel-management
 password: 1111
+
+
+## This is for connecting the raspberry pi to the Raspberry Connect Environment
+Auth key: rpuak_DqSUnbSbPMXzvPvGy98Ywf8U
