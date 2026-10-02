@@ -1,6 +1,21 @@
 {
-  "generated_at": "2026-10-01 11:58 UTC",
+  "generated_at": "2026-10-02 11:29 UTC",
   "services": [
+    {
+      "repo": "Well_Navigation",
+      "name": "Well Navigation",
+      "live": true,
+      "host": "wellnav",
+      "source": "github:Well_Navigation/network.yaml",
+      "public": [
+        {
+          "name": "wellnav.simba.services",
+          "url": "https://wellnav.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
+    },
     {
       "repo": "Energy_Infr",
       "name": "Energy Infrastructure",
@@ -19,21 +34,6 @@
           "url": "https://204.168.132.89:8444/",
           "edge": "nginx sandbox :8444, /api/ to 127.0.0.1:8766",
           "probe": "Sandbox copy; not probed"
-        }
-      ]
-    },
-    {
-      "repo": "Well_Navigation",
-      "name": "Well Navigation",
-      "live": true,
-      "host": "wellnav",
-      "source": "github:Well_Navigation/network.yaml",
-      "public": [
-        {
-          "name": "wellnav.simba.services",
-          "url": "https://wellnav.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200"
         }
       ]
     },
