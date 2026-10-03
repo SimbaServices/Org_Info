@@ -1,6 +1,21 @@
 {
-  "generated_at": "2026-10-02 11:29 UTC",
+  "generated_at": "2026-10-03 10:44 UTC",
   "services": [
+    {
+      "repo": "Fuel_Management_System",
+      "name": "Fuel Management",
+      "live": true,
+      "host": "propeval",
+      "source": "github:Fuel_Management_System/network.yaml",
+      "public": [
+        {
+          "name": "204.168.132.89:8088",
+          "url": "https://204.168.132.89:8088/",
+          "edge": "nginx :8088 TLS, proxy to 127.0.0.1:8098, Let's Encrypt IP certificate",
+          "probe": "200"
+        }
+      ]
+    },
     {
       "repo": "Well_Navigation",
       "name": "Well Navigation",
