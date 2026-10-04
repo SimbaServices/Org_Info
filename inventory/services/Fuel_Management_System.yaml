@@ -5,25 +5,43 @@ id: fuel
 live: true
 host: propeval
 public:
+- name: fuel.simba.services
+  url: https://fuel.simba.services/
+  edge: Cloudflare DNS → nginx :443, proxy to 127.0.0.1:8098
+  health: https://fuel.simba.services/api/health
 - name: 204.168.132.89:8088
   url: https://204.168.132.89:8088/
   edge: nginx :8088 TLS, proxy to 127.0.0.1:8098, Let's Encrypt IP certificate
   health: https://204.168.132.89:8088/api/health
+  probe: false
+  note: Direct IP listener; the public name is fuel.simba.services
 process:
   name: fuel.service
   bind: 127.0.0.1:8098
   listen_public: false
   runtime: python3 -m server
 store: SQLite /home/propeval/fuel-management/data/fuel.db
+edge_steps:
+- title: fuel.simba.services
+  detail: Cloudflare DNS → nginx :443
+- title: nginx :8088
+  detail: 204.168.132.89 · IP certificate · proxy to 127.0.0.1:8098
+- title: fuel.service
+  detail: 127.0.0.1:8098 · python3 -m server
+- title: SQLite
+  detail: /home/propeval/fuel-management/data/fuel.db
 outbound:
 - to: On-site CCU
-  what: Start and stop fueling. Tank poll every 10 seconds.
+  what: Websocket link for start/stop, tank readings, and radio log.
 - to: api.samsara.com
   what: Vehicle and equipment import when an admin syncs.
 notes: 'Web UI, user logins, QR fueling sessions, and the CCU telemetry store share
-  204.168.132.89 with Property Evaluation and Energy Infrastructure. Ports 80 and
-  443 stay on propeval.simba.services. Ports 8443 and 8444 stay on the energy map.
-  ufw allows 8088. The app itself binds 127.0.0.1:8098. The on-site Raspberry Pi posts
-  telemetry every 10 seconds and receives start and stop on its own command API.
+  204.168.132.89 with Property Evaluation and Energy Infrastructure. The Cloudflare
+  DNS name is fuel.simba.services and nginx routes that name on 443 (including websocket
+  upgrade for /api/v1/ccu/). propeval.simba.services stays its own server. Ports 8443
+  and 8444 stay on the energy map. Port 8088 stays on the IP certificate. ufw allows
+  80, 443, and 8088. The app itself binds 127.0.0.1:8098. The on-site Raspberry Pi
+  holds a websocket to the server for commands and telemetry; WireGuard wg-fuel listens
+  on 51820.
 
   '
