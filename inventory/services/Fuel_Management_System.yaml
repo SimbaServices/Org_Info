@@ -32,16 +32,17 @@ edge_steps:
   detail: /home/propeval/fuel-management/data/fuel.db
 outbound:
 - to: On-site CCU
-  what: Websocket link for start/stop, tank readings, and radio log.
+  what: The Pi opens wss://fuel.simba.services and keeps that websocket up. Start,
+    stop, pump override, tank snapshots, and radio lines travel on it.
 - to: api.samsara.com
   what: Vehicle and equipment import when an admin syncs.
 notes: 'Web UI, user logins, QR fueling sessions, and the CCU telemetry store share
   204.168.132.89 with Property Evaluation and Energy Infrastructure. The Cloudflare
-  DNS name is fuel.simba.services and nginx routes that name on 443 (including websocket
-  upgrade for /api/v1/ccu/). propeval.simba.services stays its own server. Ports 8443
-  and 8444 stay on the energy map. Port 8088 stays on the IP certificate. ufw allows
-  80, 443, and 8088. The app itself binds 127.0.0.1:8098. The on-site Raspberry Pi
-  holds a websocket to the server for commands and telemetry; WireGuard wg-fuel listens
-  on 51820.
+  DNS name is fuel.simba.services and nginx routes that name on 443, including the
+  websocket upgrade for /api/v1/ccu/. propeval.simba.services stays its own server.
+  Ports 8443 and 8444 stay on the energy map. Port 8088 stays on the IP certificate.
+  ufw allows 80, 443, and 8088. The app itself binds 127.0.0.1:8098. The on-site Raspberry
+  Pi opens a websocket to this host when the CCU service starts and opens it again
+  if the connection drops. Starlink does not need a port forward.
 
   '
