@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13 13:04 UTC",
+  "generated_at": "2026-10-14 10:46 UTC",
   "services": [
     {
       "repo": "Fuel_Management_System",
@@ -111,7 +111,7 @@
           "name": "crm.simba.services",
           "url": "https://crm.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200 \u00b7 schema 1.7.0 \u00b7 4 users"
+          "probe": "200 \u00b7 schema 1.7.0 \u00b7 5 users"
         }
       ]
     },
