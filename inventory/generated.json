@@ -1,6 +1,21 @@
 {
-  "generated_at": "2026-10-19 11:26 UTC",
+  "generated_at": "2026-10-20 10:32 UTC",
   "services": [
+    {
+      "repo": "Well_Navigation",
+      "name": "Well Navigation",
+      "live": true,
+      "host": "wellnav",
+      "source": "github:Well_Navigation/network.yaml",
+      "public": [
+        {
+          "name": "wellnav.simba.services",
+          "url": "https://wellnav.simba.services/",
+          "edge": "Cloudflare :443 \u2192 nginx",
+          "probe": "200"
+        }
+      ]
+    },
     {
       "repo": "Fuel_Management_System",
       "name": "Fuel Management",
@@ -19,21 +34,6 @@
           "url": "https://204.168.132.89:8088/",
           "edge": "nginx :8088 TLS, proxy to 127.0.0.1:8098, Let's Encrypt IP certificate",
           "probe": "Direct IP listener; the public name is fuel.simba.services"
-        }
-      ]
-    },
-    {
-      "repo": "Well_Navigation",
-      "name": "Well Navigation",
-      "live": true,
-      "host": "wellnav",
-      "source": "github:Well_Navigation/network.yaml",
-      "public": [
-        {
-          "name": "wellnav.simba.services",
-          "url": "https://wellnav.simba.services/",
-          "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "200"
         }
       ]
     },
@@ -182,6 +182,12 @@
     }
   ],
   "missing": [
+    {
+      "name": "Field_Invoicing",
+      "url": "https://github.com/SimbaServices/Field_Invoicing",
+      "description": "Field invoicing service repository",
+      "private": false
+    },
     {
       "name": "backoffice",
       "url": "https://github.com/SimbaServices/backoffice",
