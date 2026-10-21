@@ -1,6 +1,21 @@
 {
-  "generated_at": "2026-10-20 10:32 UTC",
+  "generated_at": "2026-10-21 10:45 UTC",
   "services": [
+    {
+      "repo": "Field_Invoicing",
+      "name": "Field Invoicing",
+      "live": true,
+      "host": "shared",
+      "source": "github:Field_Invoicing/network.yaml",
+      "public": [
+        {
+          "name": "invoice.simba.services",
+          "url": "https://invoice.simba.services/",
+          "edge": "Caddy :443 \u2192 127.0.0.1:8791",
+          "probe": "200"
+        }
+      ]
+    },
     {
       "repo": "Well_Navigation",
       "name": "Well Navigation",
@@ -183,12 +198,6 @@
   ],
   "missing": [
     {
-      "name": "Field_Invoicing",
-      "url": "https://github.com/SimbaServices/Field_Invoicing",
-      "description": "Field invoicing service repository",
-      "private": false
-    },
-    {
       "name": "backoffice",
       "url": "https://github.com/SimbaServices/backoffice",
       "description": "",
@@ -208,6 +217,11 @@
     }
   ],
   "drift": [
+    {
+      "host": "shared",
+      "kind": "declared_missing",
+      "detail": "Field Invoicing: invoice.simba.services is in network.yaml but not in live nginx"
+    },
     {
       "host": "propeval",
       "kind": "declared_missing",
