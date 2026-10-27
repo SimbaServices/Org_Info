@@ -179,7 +179,7 @@
 
   <div class="stats">
     <div class="stat"><b>4</b><span>Ubuntu hosts</span></div>
-    <div class="stat ok"><b>9</b><span>Apps returning 200</span></div>
+    <div class="stat ok"><b>1</b><span>Apps returning 200</span></div>
     <div class="stat"><b>2</b><span>Shared machine</span></div>
     <div class="stat warn"><b>2</b><span>Live vs declared drift</span></div>
   </div>
@@ -219,7 +219,7 @@
     </div>
   </div>
 
-  <p class="caption">Live HTTP probe 2026-10-22 10:46 UTC. 12 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
+  <p class="caption">Live HTTP probe 2026-10-27 11:17 UTC. 4 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
 
   <h2>Public routes</h2>
   <table id="routes">
@@ -273,7 +273,7 @@
     "Cloudflare DNS → nginx :443, proxy to 127.0.0.1:8098",
     "fuel.service 127.0.0.1:8098",
     "SQLite /home/propeval/fuel-management/data/fuel.db",
-    "200 /api/health"
+    "URLError"
   ],
   [
     "propeval",
@@ -291,7 +291,7 @@
     "Caddy :443 → 127.0.0.1:8791",
     "field-invoicing.service 127.0.0.1:8791",
     "SQLite /var/lib/field-invoicing/field.db",
-    "200 /"
+    "URLError"
   ],
   [
     "wellnav",
@@ -300,7 +300,7 @@
     "Cloudflare :443 → nginx",
     "docker wellnav 127.0.0.1:5050",
     "SQLite volume well_navigation_wellnav-data (wellnav, pipelines, disposal)",
-    "200 /healthz"
+    "URLError"
   ],
   [
     "propeval",
@@ -309,7 +309,7 @@
     "nginx :8443, /api/ to 127.0.0.1:8766, Let's Encrypt IP certificate",
     "energy-surface.service 127.0.0.1:8766",
     "SQLite db/us_pipelines.sqlite layers · db/parcels/surface/surface_all.sqlite 2.9 GB Texas appraisal rolls behind /api/",
-    "200 /"
+    "URLError"
   ],
   [
     "propeval",
@@ -354,7 +354,7 @@
     "Cloudflare :443 → nginx",
     "govdeals.service 127.0.0.1:8765",
     "SQLite /opt/govdeals/data/govdeals.db",
-    "200 /"
+    "URLError"
   ],
   [
     "shared",
@@ -363,7 +363,7 @@
     "Cloudflare :443 → nginx",
     "ledger-router.service 127.0.0.1:8787",
     "PostgreSQL :5432 ledger_meta, ledger_blobs",
-    "200 /health · schema 1.7.0 · 5 users"
+    "URLError"
   ],
   [
     "shared",
@@ -372,7 +372,7 @@
     "Cloudflare :443 → nginx",
     "maintenance.service 127.0.0.1:8090",
     "SQLite /var/lib/maintenance/maintenance.db",
-    "200 /health"
+    "URLError"
   ],
   [
     "propeval",
@@ -381,7 +381,7 @@
     "Cloudflare :443 → nginx",
     "docker propeval 127.0.0.1:5050",
     "checkout bind-mounted at /app",
-    "200 /healthz"
+    "URLError"
   ],
   [
     "propeval",
