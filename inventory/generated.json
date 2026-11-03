@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-11-02 14:02 UTC",
+  "generated_at": "2026-11-03 13:11 UTC",
   "services": [
     {
       "repo": "Fuel_Management_System",
       "name": "Fuel Management",
       "live": true,
       "host": "propeval",
-      "source": "github:Fuel_Management_System/network.yaml",
+      "source": "fallback:Fuel_Management_System.yaml",
       "public": [
         {
           "name": "fuel.simba.services",
