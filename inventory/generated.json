@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21 13:50 UTC",
+  "generated_at": "2026-11-22 13:43 UTC",
   "services": [
     {
       "repo": "Fuel_Management_System",
@@ -48,7 +48,7 @@
           "name": "wellnav.simba.services",
           "url": "https://wellnav.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "URLError"
+          "probe": "200"
         }
       ]
     },
@@ -126,7 +126,7 @@
           "name": "crm.simba.services",
           "url": "https://crm.simba.services/",
           "edge": "Cloudflare :443 \u2192 nginx",
-          "probe": "URLError"
+          "probe": "200 \u00b7 schema 1.7.0 \u00b7 1 users"
         }
       ]
     },

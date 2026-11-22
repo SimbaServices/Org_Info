@@ -179,7 +179,7 @@
 
   <div class="stats">
     <div class="stat"><b>4</b><span>Ubuntu hosts</span></div>
-    <div class="stat ok"><b>1</b><span>Apps returning 200</span></div>
+    <div class="stat ok"><b>3</b><span>Apps returning 200</span></div>
     <div class="stat"><b>2</b><span>Shared machine</span></div>
     <div class="stat warn"><b>2</b><span>Live vs declared drift</span></div>
   </div>
@@ -219,7 +219,7 @@
     </div>
   </div>
 
-  <p class="caption">Live HTTP probe 2026-10-27 11:17 UTC. 4 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
+  <p class="caption">Live HTTP probe 2026-11-22 13:43 UTC. 6 public route(s) returned 200. Live nginx/ufw/listeners collected from 3 Ubuntu host(s). Declared network.yaml routes are reconciled against that snapshot so host changes are not missed. App bind addresses stay on localhost.</p>
 
   <h2>Public routes</h2>
   <table id="routes">
@@ -300,7 +300,7 @@
     "Cloudflare :443 → nginx",
     "docker wellnav 127.0.0.1:5050",
     "SQLite volume well_navigation_wellnav-data (wellnav, pipelines, disposal)",
-    "URLError"
+    "200 /healthz"
   ],
   [
     "propeval",
@@ -363,7 +363,7 @@
     "Cloudflare :443 → nginx",
     "ledger-router.service 127.0.0.1:8787",
     "PostgreSQL :5432 ledger_meta, ledger_blobs",
-    "URLError"
+    "200 /health · schema 1.7.0 · 1 users"
   ],
   [
     "shared",
